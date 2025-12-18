@@ -1,0 +1,167 @@
+# QuestHunt Action Plan
+
+*Last Updated: December 18, 2025*
+
+## 🟢 Completed
+
+### Core Infrastructure
+
+- [x] Set up Next.js 14 project with TypeScript
+- [x] Configured Tailwind CSS with shadcn/ui components
+- [x] Set up ESLint and Prettier with custom rules
+- [x] Configured TypeScript with strict type checking
+- [x] Set up Supabase integration
+- [x] Implemented authentication with NextAuth.js
+
+### Map Integration
+
+- [x] Integrated MapLibre GL JS for interactive maps
+- [x] Created reusable MapContainer component
+- [x] Added marker management system
+- [x] Implemented current location detection
+- [x] Added geolocation controls
+
+### UI Components
+
+- [x] Set up theme provider
+- [x] Created responsive navigation
+- [x] Implemented toast notifications
+- [x] Added form validation with Zod
+
+## 🟡 In Progress
+
+### Quest Management
+
+- [x] Set up quest creation API endpoints
+- [ ] Implement quest creation form
+    - [ ] Add form fields for quest details (title, description, difficulty, etc.)
+    - [ ] Implement rich text editor for quest descriptions
+    - [ ] Add image upload for quest cover
+    - [ ] Implement waypoint management with map integration
+    - [ ] Add form validation
+- [ ] Create quest listing page
+    - [ ] Design and implement quest cards
+    - [ ] Add filtering by category and difficulty
+    - [ ] Implement sorting options (newest, popular, etc.)
+    - [ ] Add search functionality
+    - [ ] Implement infinite scroll/pagination
+
+### User Profiles
+
+- [ ] Design user profile page
+    - [ ] User information section
+    - [ ] User stats (quests completed, created, etc.)
+    - [ ] Activity feed
+    - [ ] Badges and achievements
+- [ ] Implement profile editing
+    - [ ] Basic info (name, bio, location)
+    - [ ] Avatar upload
+    - [ ] Social links
+    - [ ] Notification preferences
+- [ ] Add user statistics dashboard
+    - [ ] Quest completion metrics
+    - [ ] Activity history
+    - [ ] Achievement progress
+
+## 🔴 Planned
+
+### Social Features
+
+- [ ] Implement friend system
+- [ ] Add activity feed
+- [ ] Create messaging system
+- [ ] Add social sharing
+
+### Advanced Map Features
+
+- [ ] Add route planning
+- [ ] Implement offline maps
+- [ ] Add custom map styles
+- [ ] Integrate with more map providers
+
+### Gamification
+
+- [ ] Design achievement system
+- [ ] Implement leaderboards
+- [ ] Add badges and rewards
+- [ ] Create challenges and events
+
+### Performance & Optimization
+
+- [ ] Implement image optimization
+- [ ] Add code splitting
+- [ ] Set up performance monitoring
+- [ ] Implement caching strategies
+
+### Testing
+
+- [ ] Add unit tests
+- [ ] Implement integration tests
+- [ ] Set up E2E testing
+- [ ] Add accessibility testing
+
+### Documentation
+
+- [ ] Write API documentation
+- [ ] Create user guides
+- [ ] Add developer documentation
+- [ ] Create deployment guides
+
+## 📅 Upcoming Milestones
+
+### Milestone 1: MVP (Target: Jan 15, 2026)
+
+- [ ] Complete quest creation flow
+- [ ] Implement basic user profiles
+- [ ] Deploy to staging environment
+
+### Milestone 2: Social Features (Target: Feb 15, 2026)
+
+- [ ] Implement friend system
+- [ ] Add activity feed
+- [ ] Create messaging system
+
+### Milestone 3: Gamification (Target: Mar 15, 2026)
+
+- [ ] Implement achievement system
+- [ ] Add leaderboards
+- [ ] Create challenges and events
+
+## 📊 Progress
+
+```mermaid
+gantt
+    title QuestHunt Development Timeline
+    dateFormat  YYYY-MM-DD
+    section Core
+    Project Setup           :done,    des1, 2025-12-10, 7d
+    Authentication         :done,    des2, after des1, 5d
+    Map Integration        :done,    des3, after des2, 5d
+    section Quests
+    Quest Creation         :active,  des4, after des3, 10d
+    Quest Discovery        :         des5, after des4, 7d
+    section Social
+    User Profiles          :         des6, after des5, 7d
+    Friend System          :         des7, after des6, 7d
+    section Gamification
+    Achievements           :         des8, after des7, 7d
+    Leaderboards           :         des9, after des8, 5d
+```
+
+## 📝 Notes
+
+- All dates are estimates and subject to change
+- Priorities may shift based on user feedback
+- New features may be added to the roadmap as needed
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
