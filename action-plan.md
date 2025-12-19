@@ -6,12 +6,22 @@
 
 ### Core Infrastructure
 
-- [x] Set up Next.js 14 project with TypeScript
-- [x] Configured Tailwind CSS with shadcn/ui components
+- [x] Set up Next.js 16 project with TypeScript
+- [x] Configured Tailwind CSS (v4) with shadcn/ui components
 - [x] Set up ESLint and Prettier with custom rules
 - [x] Configured TypeScript with strict type checking
-- [x] Set up Supabase integration
-- [x] Implemented authentication with NextAuth.js
+- [x] Set up Supabase integration (DB/Auth/Storage)
+- [x] Added Supabase SSR server client (`apps/web/lib/supabase/server.ts`)
+
+### Backend API
+
+- [x] Quest endpoints implemented (`/api/quests`, `/api/quests/[id]`)
+- [x] Waypoints endpoints implemented (`/api/quests/[id]/waypoints`, `/api/quests/[id]/waypoints/[wpId]`)
+- [x] Progress endpoints implemented (`/api/quests/[id]/start`, `/api/quests/[id]/complete`,
+  `/api/waypoints/[wpId]/visit`)
+- [x] Badges endpoints implemented (`/api/badges`, `/api/badges/stats`, `/api/badges/evaluate`)
+- [x] Shared Zod schemas and service modules under `apps/web/lib/server/*` for forward-compatibility
+- [x] Supabase migrations for progress, visits, and badges with RLS
 
 ### Map Integration
 
@@ -32,14 +42,14 @@
 
 ### Quest Management
 
-- [x] Set up quest creation API endpoints
+- [x] Set up quest API endpoints (Next.js Route Handlers under `apps/web/app/api/quests`)
 - [ ] Implement quest creation form
     - [ ] Add form fields for quest details (title, description, difficulty, etc.)
     - [ ] Implement rich text editor for quest descriptions
     - [ ] Add image upload for quest cover
     - [ ] Implement waypoint management with map integration
     - [ ] Add form validation
-- [ ] Create quest listing page
+- [ ] Create quest listing page (basic server component exists, refine UI and filters)
     - [ ] Design and implement quest cards
     - [ ] Add filtering by category and difficulty
     - [ ] Implement sorting options (newest, popular, etc.)
@@ -102,7 +112,7 @@
 
 ### Documentation
 
-- [ ] Write API documentation
+- [x] Write API documentation (README updated with endpoints)
 - [ ] Create user guides
 - [ ] Add developer documentation
 - [ ] Create deployment guides

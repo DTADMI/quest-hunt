@@ -1,9 +1,4 @@
-// B:
-\git
-\quest-hunt
-\supabase
-\migrations
-\20240101000000_create_quests_schema.sql
+-- B:\git\quest-hunt\supabase\migrations\20240101000000_create_quests_schema.sql
 -- Enable necessary extensions
 create
 extension if not exists "uuid-ossp";

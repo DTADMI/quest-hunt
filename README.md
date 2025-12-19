@@ -11,9 +11,9 @@ community.
 ### Prerequisites
 
 - Node.js 20.x (LTS)
-- pnpm 8.x
+- pnpm 10.x
 - Supabase account
-- Mapbox access token (for maps)
+- Optional: Map tiles token (MapTiler/Mapbox) if you plan to use a hosted tiles service with MapLibre
 
 ### Local Development
 
@@ -29,10 +29,12 @@ community.
    ```
 
 3. **Set up environment variables**
+    - Copy the root env example into the Next.js app (the app reads env from its folder):
    ```bash
-   cp .env.example .env.local
+   cp .env.example apps/web/.env.local
    ```
-   Update the `.env.local` file with your credentials.
+    - Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project settings.
+    - If you use hosted map tiles, set the map token as well (see Environment Variables below).
 
 4. **Start the development server**
    ```bash
@@ -55,76 +57,59 @@ community.
 
 ### Frontend
 
-- **Framework**: Next.js 14.1.0 (App Router)
-- **Language**: TypeScript 5.3.3
-- **Styling**: Tailwind CSS 3.4.0 + shadcn/ui
-- **State Management**: TanStack Query v5 + Zustand
-- **Maps**: MapLibre GL (OpenStreetMap)
-- **Forms**: React Hook Form + Zod
-- **Authentication**: NextAuth.js v4.24.5
-- **UI Components**: Radix UI + shadcn/ui
-- **Icons**: Lucide React
-- **Notifications**: Sonner
+- Framework: Next.js 16 (App Router)
+- Language: TypeScript 5.9
+- Styling: Tailwind CSS (v4 in app) + shadcn/ui + Radix UI
+- State/Data: TanStack Query v5
+- Maps: MapLibre GL (OpenStreetMap tiles by default)
+- Forms/Validation: React Hook Form + Zod
+- Authentication: Supabase Auth via `@supabase/ssr` (cookie-based SSR helpers)
+- Icons/Notifications: Lucide React, Sonner
 
 ### Backend
 
-- **Runtime**: Node.js 20.11.0
-- **Language**: TypeScript 5.3.3
-- **API**: REST + WebSockets
-- **Database**: Supabase PostgreSQL 15 with PostGIS
-- **ORM**: Drizzle ORM
-- **Auth**: Supabase Auth
-- **Storage**: Supabase Storage
-- **Real-time**: Supabase Realtime
+- Runtime: Node.js 20+
+- API: Next.js Route Handlers (in-app API under `apps/web/app/api/**`) using a cookie-aware Supabase server client
+- Database: Supabase PostgreSQL (with PostGIS)
+- Auth: Supabase Auth (via cookies on server components/route handlers)
+- Storage/Realtime: Supabase Storage and Realtime
+- Structure for forward-compatibility: shared Zod schemas and service modules under `apps/web/lib/server/*` to enable an
+  easy migration to a NestJS service in `apps/api` later if needed
 
 ### DevOps
 
-- **Version Control**: Git + GitHub
-- **Package Manager**: pnpm 8.14.0
-- **Frontend Hosting**: Vercel
-- **Backend Hosting**: Supabase + Vercel Edge Functions
-- **CI/CD**: GitHub Actions
-- **Monitoring**: Sentry + Vercel Analytics
-- **Code Quality**: ESLint + Prettier
+- Monorepo: Turborepo workspaces (`apps/*`, `packages/*`)
+- Package Manager: pnpm 10
+- Hosting: Vercel (Next.js app) + Supabase (DB/Auth/Storage)
+- CI/CD: GitHub Actions (planned)
+- Monitoring: Vercel Analytics/Sentry (optional)
+- Code Quality: ESLint + Prettier + TypeScript
 
 ## 🏗 Project Structure
 
 ```
-/questhunt
-├── /apps
-│   ├── /web/                  # Next.js 14 frontend
-│   │   ├── app/               # App Router
-│   │   ├── components/        # Reusable UI components
-│   │   ├── lib/               # Utility functions
-│   │   └── styles/            # Global styles
-│   └── /api/                  # API routes
-├── /packages
-│   ├── /config/              # Shared configurations
-│   │   ├── eslint/           # ESLint config
-│   │   └── tailwind/         # Tailwind config
-│   ├── /db/                  # Database schemas and types
-│   └── /ui/                  # Shared UI components
-├── /supabase
-│   ├── /migrations/          # Database migrations
-│   └── /seed/                # Seed data
-├── .github/                  # GitHub configurations
-├── .husky/                   # Git hooks
-├── .vscode/                  # VS Code settings
-├── public/                   # Static assets
-└── .env.*                    # Environment configurations
-├── /supabase            # Database migrations and seed data
-└── /docs                # Project documentation
+quest-hunt/
+├── apps/
+│   └── web/                 # Next.js 16 App Router frontend (API routes included)
+│       ├── app/             # Routes, server components, route handlers
+│       ├── components/      # Reusable UI
+│       ├── lib/             # Clients, utils (e.g., supabase client)
+│       └── public/          # Static assets for the app
+├── packages/                # (reserved for shared packages)
+├── supabase/                # DB migrations and seed scripts (Supabase CLI)
+├── README.md
+├── action-plan.md
+└── .env.example             # Example environment variables (copy to apps/web/.env.local)
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 20.x
-- pnpm 8.x
-- Docker (for local development)
-- Supabase account
-- Mapbox access token (for MapLibre GL)
+- Node.js 20+
+- pnpm 10+
+- Supabase account (and CLI if you want local DB)
+- Optional: Docker + Supabase CLI for local database
 
 ### Local Development
 
@@ -140,68 +125,61 @@ community.
    ```
 
 3. **Set up environment variables**
-   Copy the example environment files and update with your credentials:
+   Copy the example and update with your credentials:
    ```bash
-   cp apps/web/.env.example apps/web/.env.local
-   cp apps/api/.env.example apps/api/.env
+   cp .env.example apps/web/.env.local
    ```
 
-4. **Start Supabase locally**
-   ```bash
-   cd supabase
-   docker-compose up -d
-   ```
+4. (Optional) **Start Supabase locally**
+    - Install Supabase CLI: https://supabase.com/docs/guides/cli
+    - Start local stack:
+      ```bash
+      cd supabase
+      supabase start
+      ```
 
 5. **Run database migrations**
    ```bash
-   pnpm db:push
-   pnpm db:seed
+   pnpm db:push    # applies SQL in supabase/migrations
+   pnpm db:seed    # optional: seeds demo data if configured
    ```
 
-6. **Start development servers**
-   In separate terminals:
-   ```bash
-   # Terminal 1 - Frontend
-   pnpm dev:web
-   
-   # Terminal 2 - Backend
-   pnpm dev:api
-   ```
+6. **Start the app**
+    - From the repo root (Turborepo):
+      ```bash
+      pnpm dev
+      ```
+    - Or only the web app:
+      ```bash
+      pnpm -F web dev
+      ```
 
 7. **Open the application**
    Visit `http://localhost:3000` in your browser
 
 ## 🔑 Environment Variables
 
-### Frontend (`.env.local`)
+### Frontend (`apps/web/.env.local`)
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-nextauth-secret
-NEXT_PUBLIC_MAPBOX_TOKEN=your-mapbox-token
+# If you use Mapbox tiles with MapLibre
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your-mapbox-token
+# If you use MapTiler tiles with MapLibre
+NEXT_PUBLIC_MAPTILER_KEY=your-maptiler-key
 ```
 
-### Backend (`.env`)
+Notes:
 
-```env
-PORT=3001
-NODE_ENV=development
-DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your-jwt-secret
-SUPABASE_SERVICE_ROLE=your-supabase-service-role
-```
+- Supabase project settings → API → copy Project URL and anon public key.
+- For local Supabase (via CLI), the URL and keys are printed after `supabase start`.
 
 ## 🧪 Testing
 
 ### Run unit tests
 
-```bash
-pnpm test
-```
+No automated tests are defined yet. Planned: unit tests (Vitest) and E2E (Playwright).
 
 ### Run E2E tests
 
@@ -220,22 +198,41 @@ pnpm build
 ### Deploy to Vercel
 
 1. Push your code to GitHub
-2. Connect your Vercel project to the repository
-3. Set up environment variables in Vercel
-4. Deploy!
+2. Import the repository in Vercel and select `apps/web` as the app
+3. Add env vars (same as local) in Vercel Project Settings → Environment Variables
+4. Set Build Command: `pnpm -w install && pnpm -w build` or use Vercel’s Turborepo preset
+5. Set Output: default (Next.js)
+6. Deploy
 
 ### Database Migrations in Production
 
+Use the Supabase dashboard or Supabase CLI to manage migrations against your hosted project. Root helpers:
 ```bash
-pnpm db:migrate:prod
+pnpm db:push   # push SQL to Supabase project configured by CLI in ./supabase
+pnpm db:seed   # seed helper script
 ```
 
 ## 📚 Documentation
 
-- [API Documentation](/docs/API.md)
-- [Database Schema](/docs/DATABASE.md)
-- [Authentication Flow](/docs/AUTH.md)
-- [Deployment Guide](/docs/DEPLOYMENT.md)
+- Key docs in repo:
+    - geocaching-app-documentation.md (high-level architecture and choices)
+    - action-plan.md (roadmap and current status)
+    - supabase/migrations/* (DB schema)
+
+## 🔒 Security Notes
+
+- Use Supabase Row Level Security (RLS) on all tables (enable by default and add policies).
+- Never expose service role keys in the client. Only use `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the browser.
+- Store secrets only in environment variables (local `.env.local`, Vercel env settings).
+- Validate all inputs (Zod schemas used in Route Handlers).
+
+## 🧭 Alternatives (and why we chose current stack)
+
+- Authentication: NextAuth.js vs Supabase Auth
+    - We use Supabase Auth for tight integration with the database and SSR cookies. NextAuth remains an option if we add
+      OAuth providers decoupled from DB.
+- Maps: MapLibre + OSM vs Mapbox GL
+    - We use MapLibre for open-source flexibility; can swap in Mapbox/MapTiler hosted tiles if needed.
 
 ## 🤝 Contributing
 
@@ -258,3 +255,61 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ by the QuestHunt Team
+
+## 🧩 Backend API Endpoints
+
+All endpoints live inside the Next.js app (App Router) under `apps/web/app/api/**` and use Supabase Auth via cookies.
+
+Auth/session:
+
+- `GET /api/auth/me` → returns `{ user }` or `{ user: null }`
+
+Quests:
+
+- `GET /api/quests` → list quests (requires auth)
+- `POST /api/quests` → create quest (requires auth)
+- `GET /api/quests/:id` → get quest by id
+- `PUT /api/quests/:id` → update own quest (requires auth)
+- `DELETE /api/quests/:id` → delete own quest (requires auth)
+
+Waypoints (child of quest):
+
+- `GET /api/quests/:id/waypoints` → list waypoints for a quest
+- `POST /api/quests/:id/waypoints` → create waypoint (quest owner only)
+- `PUT /api/quests/:id/waypoints/:wpId` → update waypoint (quest owner only)
+- `DELETE /api/quests/:id/waypoints/:wpId` → delete waypoint (quest owner only)
+
+Progress:
+
+- `POST /api/quests/:id/start` → start quest for current user
+- `POST /api/quests/:id/complete` → complete quest for current user
+- `POST /api/waypoints/:wpId/visit` → record a waypoint visit
+
+Badges:
+
+- `GET /api/badges` → list all badges
+- `GET /api/badges/stats` → summary of user badge progress (requires auth)
+- `POST /api/badges/evaluate` → trigger server-side badge evaluation (requires auth)
+
+### Database schema additions (Supabase)
+
+New tables added via migrations in `supabase/migrations`:
+
+- `quest_progress` (track user progress per quest)
+- `waypoint_visits` (track visits per waypoint)
+- `badges`, `user_badges` (simple badge system)
+
+RLS policies are enabled for all tables. See migration files for details.
+
+### Example: start a quest (curl)
+
+```bash
+curl -X POST http://localhost:3000/api/quests/<questId>/start \
+  -H "Cookie: <your auth cookies>"
+```
+
+### Architecture note: NestJS later
+
+We keep MVP velocity by using in-app API routes. Service modules and Zod schemas live under `apps/web/lib/server/*` so
+we can migrate to a dedicated NestJS backend (`apps/api`) later with minimal rewrite. If/when complexity, background
+jobs, or multiple clients demand it, we will introduce NestJS and move these modules over.
