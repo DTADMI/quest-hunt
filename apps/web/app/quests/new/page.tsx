@@ -49,19 +49,56 @@ export default function CreateQuestPage() {
     const onSubmit = async (data: QuestFormValues) => {
         try {
             setIsSubmitting(true);
+
+            // Transform form data to API payload expected by /api/quests
+            const payload = {
+                title: data.title,
+                description: data.description || '',
+                difficulty: data.difficulty,
+                status: 'draft' as const,
+                start_location: null as any,
+                estimated_duration_minutes: Number.isFinite(data.estimatedTime)
+                    ? Math.max(1, Math.round((data.estimatedTime as number) * 60))
+                    : null,
+            };
+
             const response = await fetch('/api/quests', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create quest');
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err?.error || 'Failed to create quest');
             }
 
             const result = await response.json();
+            // Persist waypoints if any
+            const waypoints = form.getValues('waypoints');
+            if (Array.isArray(waypoints) && waypoints.length > 0) {
+                try {
+                    await Promise.all(
+                        waypoints.map((wp) =>
+                            fetch(`/api/quests/${result.id}/waypoints`, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    title: wp.title || `Waypoint ${wp.order + 1}`,
+                                    description: wp.description || '',
+                                    location: {
+                                        type: 'Point',
+                                        coordinates: [wp.longitude, wp.latitude],
+                                    },
+                                    order_index: wp.order ?? 0,
+                                }),
+                            })
+                        )
+                    );
+                } catch (e) {
+                    console.error('Failed to persist some waypoints', e);
+                }
+            }
             toast({
                 title: 'Quest created!',
                 description: 'Your quest has been created successfully.',

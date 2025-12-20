@@ -38,7 +38,7 @@
     "db:reset": "cd supabase && supabase db reset",
     "db:seed": "tsx supabase/seed.ts",
     "check-updates": "npx taze -r",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "turbo run type-check",
     "postinstall": "echo 'Postinstall complete'"
   },
   "dependencies": {

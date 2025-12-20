@@ -1,6 +1,6 @@
 # QuestHunt Action Plan
 
-*Last Updated: December 18, 2025*
+*Last Updated: December 19, 2025*
 
 ## 🟢 Completed
 
@@ -44,17 +44,17 @@
 
 - [x] Set up quest API endpoints (Next.js Route Handlers under `apps/web/app/api/quests`)
 - [ ] Implement quest creation form
-    - [ ] Add form fields for quest details (title, description, difficulty, etc.)
-    - [ ] Implement rich text editor for quest descriptions
-    - [ ] Add image upload for quest cover
-    - [ ] Implement waypoint management with map integration
-    - [ ] Add form validation
+  - [x] Add form fields for quest details (title, description, difficulty, duration) — basic Textarea for now
+  - [ ] Implement rich text editor for quest descriptions (TipTap recommended; document pros/cons)
+  - [ ] Add image upload for quest cover (deferred)
+  - [x] Implement waypoint management with map integration (basic persistence on creation)
+  - [x] Add form validation (Zod + RHF) and server-side validation
 - [ ] Create quest listing page (basic server component exists, refine UI and filters)
     - [ ] Design and implement quest cards
-    - [ ] Add filtering by category and difficulty
-    - [ ] Implement sorting options (newest, popular, etc.)
-    - [ ] Add search functionality
-    - [ ] Implement infinite scroll/pagination
+  - [x] Add server-side filtering by difficulty (URL params → DB query)
+  - [x] Implement sorting options (newest/oldest) server-side
+  - [x] Add server-side search (ILIKE on title/description)
+  - [x] Implement pagination (page/limit)
 
 ### User Profiles
 

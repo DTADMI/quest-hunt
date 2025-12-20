@@ -313,3 +313,52 @@ curl -X POST http://localhost:3000/api/quests/<questId>/start \
 We keep MVP velocity by using in-app API routes. Service modules and Zod schemas live under `apps/web/lib/server/*` so
 we can migrate to a dedicated NestJS backend (`apps/api`) later with minimal rewrite. If/when complexity, background
 jobs, or multiple clients demand it, we will introduce NestJS and move these modules over.
+
+### Listing: /api/quests query parameters
+
+Server-side filtering, sorting and pagination are supported via URL query params:
+
+- `q` — optional search string (ILIKE on `title` and `description`)
+- `difficulty` — optional: one of `easy|medium|hard|expert`
+- `sort` — optional: `newest` (default) or `oldest`
+- `page` — optional: page number starting at `1` (default `1`)
+- `limit` — optional: page size (default `12`, max `50`)
+
+Response shape:
+
+```json
+{
+  "items": [],
+  "page": 1,
+  "limit": 12,
+  "total": 42
+}
+```
+
+Examples:
+
+```bash
+# Newest medium difficulty quests, page 2
+curl "http://localhost:3000/api/quests?difficulty=medium&page=2&limit=12"
+
+# Search by text and order oldest first
+curl "http://localhost:3000/api/quests?q=forest&sort=oldest"
+```
+
+### Editor choice for quest descriptions
+
+We will use TipTap for rich text in quest descriptions (deferred for MVP).
+
+Pros:
+
+- Great developer ergonomics and extensibility
+- Output as JSON or HTML; collaborative features available
+- Active ecosystem and fine-grained control over toolbars and nodes
+
+Cons:
+
+- Heavier than a simple Markdown editor
+- Requires SSR guards for Next.js (client-only rendering)
+
+Alternatives considered: a light Markdown editor (smaller bundle, simpler), or keeping a plain textarea (fastest, but no
+formatting). For MVP we keep a plain textarea and migrate to TipTap post-MVP.

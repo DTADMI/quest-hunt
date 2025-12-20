@@ -3,16 +3,14 @@
 import {useEffect, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useDebounce} from 'use-debounce';
-import {Clock, MapPin, Search, Star, Trophy} from 'lucide-react';
+import {Search} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card';
-import {Badge} from '@/components/ui/badge';
 import {Skeleton} from '@/components/ui/skeleton';
+import {QuestList} from '@/components/quests/quest-list';
 
 // Types
-type Difficulty = 'easy' | 'medium' | 'hard' | 'extreme';
-type Status = 'upcoming' | 'ongoing' | 'completed';
+type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 interface Quest {
     id: string;
@@ -73,92 +71,65 @@ export default function QuestsPage() {
     const [quests, setQuests] = useState<Quest[]>([]);
     const [filteredQuests, setFilteredQuests] = useState<Quest[]>([]);
 
-    // Load quests
+    // Load quests from server API with server-side filters
     useEffect(() => {
+        const controller = new AbortController();
         const loadQuests = async () => {
-            setIsLoading(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 800));
-            const mockQuests = generateMockQuests(12);
-            setQuests(mockQuests);
-            setFilteredQuests(mockQuests);
-            setIsLoading(false);
-        };
-
-        loadQuests();
-    }, []);
-
-    // Apply filters and sorting
-    useEffect(() => {
-        let result = [...quests];
-
-        // Apply search filter
-        if (debouncedSearch) {
-            const searchLower = debouncedSearch.toLowerCase();
-            result = result.filter(
-                quest => quest.title.toLowerCase().includes(searchLower) ||
-                    quest.description.toLowerCase().includes(searchLower) ||
-                    quest.tags.some(tag => tag.toLowerCase().includes(searchLower))
-            );
-        }
-
-        // Apply difficulty filter
-        if (difficultyFilter !== 'all') {
-            result = result.filter(quest => quest.difficulty === difficultyFilter);
-        }
-
-        // Apply status filter
-        if (statusFilter !== 'all') {
-            result = result.filter(quest => quest.status === statusFilter);
-        }
-
-        // Apply sorting
-        result.sort((a, b) => {
-            switch (sortBy) {
-                case 'newest':
-                    return b.id.localeCompare(a.id);
-                case 'rating':
-                    return b.rating - a.rating;
-                case 'distance':
-                    return a.distance - b.distance;
-                case 'duration':
-                    return a.duration - b.duration;
-                default:
-                    return 0;
+            try {
+                setIsLoading(true);
+                const params = new URLSearchParams();
+                if (debouncedSearch) params.set('q', debouncedSearch);
+                if (difficultyFilter !== 'all') params.set('difficulty', difficultyFilter);
+                if (sortBy) params.set('sort', sortBy === 'newest' ? 'newest' : 'oldest');
+                const res = await fetch(`/api/quests?${params.toString()}`, {
+                    signal: controller.signal,
+                    headers: {'Accept': 'application/json'},
+                    cache: 'no-store',
+                });
+                if (!res.ok) throw new Error('Failed to load quests');
+                const json = await res.json();
+                setQuests(json.items ?? []);
+            } catch (e) {
+                if ((e as any).name !== 'AbortError') {
+                    console.error(e);
+                }
+            } finally {
+                setIsLoading(false);
             }
-        });
+        };
+        loadQuests();
+        return () => controller.abort();
+    }, [debouncedSearch, difficultyFilter, sortBy]);
 
-        setFilteredQuests(result);
-    }, [quests, debouncedSearch, difficultyFilter, statusFilter, sortBy]);
+    // No client-side filtering beyond server query; keep a mirror list for rendering
+    useEffect(() => {
+        setFilteredQuests(quests);
+    }, [quests]);
 
     // Update URL with filters
     useEffect(() => {
         const params = new URLSearchParams();
-        if (debouncedSearch) params.set('search', debouncedSearch);
+        if (debouncedSearch) params.set('q', debouncedSearch);
         if (difficultyFilter !== 'all') params.set('difficulty', difficultyFilter);
-        if (statusFilter !== 'all') params.set('status', statusFilter);
         if (sortBy !== 'newest') params.set('sort', sortBy);
 
         router.replace(`/quests?${params.toString()}`, {scroll: false});
-    }, [debouncedSearch, difficultyFilter, statusFilter, sortBy, router]);
+    }, [debouncedSearch, difficultyFilter, sortBy, router]);
 
     // Load filters from URL on initial load
     useEffect(() => {
-        const search = searchParams.get('search');
+        const search = searchParams.get('q');
         const difficulty = searchParams.get('difficulty');
-        const status = searchParams.get('status');
         const sort = searchParams.get('sort');
 
         if (search) setSearchTerm(search);
         if (difficulty) setDifficultyFilter(difficulty);
-        if (status) setStatusFilter(status);
         if (sort) setSortBy(sort);
     }, [searchParams]);
 
     const handleResetFilters = () => {
         setSearchTerm('');
         setDifficultyFilter('all');
-        setStatusFilter('all');
         setSortBy('newest');
     };
 
@@ -194,22 +165,11 @@ export default function QuestsPage() {
                                 <option value="easy">Easy</option>
                                 <option value="medium">Medium</option>
                                 <option value="hard">Hard</option>
-                                <option value="extreme">Extreme</option>
+                                <option value="expert">Expert</option>
                             </select>
                         </div>
 
-                        <div className="relative">
-                            <select
-                                className="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                            >
-                                <option value="all">All Statuses</option>
-                                <option value="upcoming">Upcoming</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                        </div>
+                        {/* Status filter removed for MVP; server doesn't expose these statuses */}
 
                         <div className="relative">
                             <select
@@ -230,7 +190,7 @@ export default function QuestsPage() {
                     </div>
                 </div>
 
-                {(searchTerm || difficultyFilter !== 'all' || statusFilter !== 'all') && (
+                {(searchTerm || difficultyFilter !== 'all') && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>{filteredQuests.length} quests found</span>
                         <span className="text-muted-foreground/50">•</span>
@@ -248,90 +208,15 @@ export default function QuestsPage() {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {Array.from({length: 6}).map((_, i) => (
-                        <Card key={i} className="overflow-hidden">
-                            <Skeleton className="h-48 w-full rounded-t-lg"/>
-                            <CardHeader>
-                                <Skeleton className="h-6 w-3/4 mb-2"/>
-                                <Skeleton className="h-4 w-1/2"/>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                                <Skeleton className="h-4 w-full"/>
-                                <Skeleton className="h-4 w-5/6"/>
-                            </CardContent>
-                            <CardFooter className="flex justify-between">
-                                <Skeleton className="h-8 w-20"/>
-                                <Skeleton className="h-8 w-24"/>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            ) : filteredQuests.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredQuests.map((quest) => (
-                        <Card key={quest.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                            <div className="relative">
-                                <img
-                                    src={quest.imageUrl}
-                                    alt={quest.title}
-                                    className="w-full h-48 object-cover"
-                                />
-                                <div className="absolute top-2 right-2">
-                                    <Badge
-                                        className={`${difficultyColors[quest.difficulty]} hover:${difficultyColors[quest.difficulty]}`}
-                                    >
-                                        {quest.difficulty.charAt(0).toUpperCase() + quest.difficulty.slice(1)}
-                                    </Badge>
-                                </div>
-                            </div>
-                            <CardHeader>
-                                <CardTitle className="text-xl">{quest.title}</CardTitle>
-                                <div className="flex items-center text-sm text-muted-foreground">
-                                    <MapPin className="h-4 w-4 mr-1"/>
-                                    <span>{quest.location}</span>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground line-clamp-2">
-                                    {quest.description}
-                                </p>
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                    {quest.tags.map((tag) => (
-                                        <Badge key={tag} variant="secondary">
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex justify-between items-center">
-                                <div className="flex items-center space-x-4 text-sm">
-                                    <div className="flex items-center">
-                                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1"/>
-                                        <span>{quest.rating}</span>
-                                        <span className="text-muted-foreground ml-1">({quest.reviewCount})</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <Clock className="h-4 w-4 text-muted-foreground mr-1"/>
-                                        <span>{Math.floor(quest.duration / 60)}h {quest.duration % 60}m</span>
-                                    </div>
-                                </div>
-                                <Button size="sm">View Details</Button>
-                            </CardFooter>
-                        </Card>
+                        <div key={i} className="overflow-hidden rounded-lg border p-4 space-y-4">
+                            <Skeleton className="h-6 w-1/2"/>
+                            <Skeleton className="h-4 w-3/4"/>
+                            <Skeleton className="h-4 w-full"/>
+                        </div>
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                        <Trophy className="h-6 w-6 text-muted-foreground"/>
-                    </div>
-                    <h3 className="mt-4 text-lg font-medium">No quests found</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        Try adjusting your search or filter to find what you're looking for.
-                    </p>
-                    <Button className="mt-4" onClick={handleResetFilters}>
-                        Clear filters
-                    </Button>
-                </div>
+                <QuestList quests={filteredQuests}/>
             )}
 
             {/* Load More Button (for pagination) */}
