@@ -70,6 +70,9 @@ export default function QuestsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [quests, setQuests] = useState<Quest[]>([]);
     const [filteredQuests, setFilteredQuests] = useState<Quest[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [limit, setLimit] = useState<number>(12);
+    const [total, setTotal] = useState<number>(0);
 
     // Load quests from server API with server-side filters
     useEffect(() => {
@@ -89,6 +92,7 @@ export default function QuestsPage() {
                 if (!res.ok) throw new Error('Failed to load quests');
                 const json = await res.json();
                 setQuests(json.items ?? []);
+                setTotal(json.total ?? 0);
             } catch (e) {
                 if ((e as any).name !== 'AbortError') {
                     console.error(e);
@@ -99,7 +103,7 @@ export default function QuestsPage() {
         };
         loadQuests();
         return () => controller.abort();
-    }, [debouncedSearch, difficultyFilter, sortBy]);
+    }, [debouncedSearch, difficultyFilter, sortBy, page, limit]);
 
     // No client-side filtering beyond server query; keep a mirror list for rendering
     useEffect(() => {
@@ -112,25 +116,33 @@ export default function QuestsPage() {
         if (debouncedSearch) params.set('q', debouncedSearch);
         if (difficultyFilter !== 'all') params.set('difficulty', difficultyFilter);
         if (sortBy !== 'newest') params.set('sort', sortBy);
+        if (page !== 1) params.set('page', String(page));
+        if (limit !== 12) params.set('limit', String(limit));
 
         router.replace(`/quests?${params.toString()}`, {scroll: false});
-    }, [debouncedSearch, difficultyFilter, sortBy, router]);
+    }, [debouncedSearch, difficultyFilter, sortBy, page, limit, router]);
 
     // Load filters from URL on initial load
     useEffect(() => {
         const search = searchParams.get('q');
         const difficulty = searchParams.get('difficulty');
         const sort = searchParams.get('sort');
+        const pageParam = searchParams.get('page');
+        const limitParam = searchParams.get('limit');
 
         if (search) setSearchTerm(search);
         if (difficulty) setDifficultyFilter(difficulty);
         if (sort) setSortBy(sort);
+        if (pageParam) setPage(Math.max(1, parseInt(pageParam, 10) || 1));
+        if (limitParam) setLimit(Math.min(50, Math.max(1, parseInt(limitParam, 10) || 12)));
     }, [searchParams]);
 
     const handleResetFilters = () => {
         setSearchTerm('');
         setDifficultyFilter('all');
         setSortBy('newest');
+        setPage(1);
+        setLimit(12);
     };
 
     return (
@@ -219,12 +231,28 @@ export default function QuestsPage() {
                 <QuestList quests={filteredQuests}/>
             )}
 
-            {/* Load More Button (for pagination) */}
-            {!isLoading && filteredQuests.length > 0 && (
-                <div className="mt-8 flex justify-center">
-                    <Button variant="outline" className="w-full max-w-sm">
-                        Load More Quests
-                    </Button>
+            {/* Pagination controls */}
+            {!isLoading && (
+                <div className="mt-8 flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                        Page {page} • Showing {filteredQuests.length} of {total}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" disabled={page <= 1}
+                                onClick={() => setPage(p => Math.max(1, p - 1))}>Previous</Button>
+                        <Button variant="outline" disabled={page * limit >= total}
+                                onClick={() => setPage(p => p + 1)}>Next</Button>
+                        <select
+                            className="ml-2 flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            value={limit}
+                            onChange={(e) => {
+                                setPage(1);
+                                setLimit(parseInt(e.target.value, 10));
+                            }}
+                        >
+                            {[6, 12, 24, 36].map(n => (<option key={n} value={n}>{n} / page</option>))}
+                        </select>
+                    </div>
                 </div>
             )}
         </div>

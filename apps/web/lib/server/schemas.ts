@@ -54,3 +54,14 @@ export const visitWaypointSchema = z.object({
         })
         .optional(),
 });
+
+// User profile
+export const profileUpdateSchema = z.object({
+    username: z.string().min(3).max(32).optional(),
+    display_name: z.string().min(1).max(64).optional(),
+    bio: z.string().max(500).optional(),
+    location: z.string().max(120).optional(),
+    avatar_url: z.string().url().max(300).optional(),
+}).refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided for update',
+});

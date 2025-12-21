@@ -1,6 +1,6 @@
 # QuestHunt Action Plan
 
-*Last Updated: December 19, 2025*
+*Last Updated: December 21, 2025*
 
 ## 🟢 Completed
 
@@ -43,19 +43,19 @@
 ### Quest Management
 
 - [x] Set up quest API endpoints (Next.js Route Handlers under `apps/web/app/api/quests`)
-- [ ] Implement quest creation form
-  - [x] Add form fields for quest details (title, description, difficulty, duration) — basic Textarea for now
+- [x] Implement quest creation form
+  - [x] Add form fields for quest details (title, description, difficulty, duration)
   - [x] Implement rich text editor for quest descriptions (TipTap) — sanitize on render
   - [ ] Add image upload for quest cover (deferred)
   - [x] Implement waypoint management with map integration (basic persistence on creation)
   - [x] Add waypoint edit/delete and reorder within the form UI
   - [x] Add form validation (Zod + RHF) and server-side validation
-- [ ] Create quest listing page (basic server component exists, refine UI and filters)
-    - [ ] Design and implement quest cards
+- [x] Create quest listing page (refined UI and filters)
+  - [x] Design and implement quest cards
   - [x] Add server-side filtering by difficulty (URL params → DB query)
   - [x] Implement sorting options (newest/oldest) server-side
   - [x] Add server-side search (ILIKE on title/description)
-  - [x] Implement pagination (page/limit)
+  - [x] Implement pagination (page/limit with URL sync and controls)
 
 #### Quest Detail Page
 
@@ -67,20 +67,19 @@
 
 ### User Profiles
 
-- [ ] Design user profile page
-    - [ ] User information section
-    - [ ] User stats (quests completed, created, etc.)
-    - [ ] Activity feed
-    - [ ] Badges and achievements
-- [ ] Implement profile editing
-    - [ ] Basic info (name, bio, location)
-    - [ ] Avatar upload
-    - [ ] Social links
-    - [ ] Notification preferences
-- [ ] Add user statistics dashboard
-    - [ ] Quest completion metrics
-    - [ ] Activity history
-    - [ ] Achievement progress
+- [x] API endpoints
+  - [x] `GET /api/users/me` — current profile
+  - [x] `PUT /api/users/me` — update current profile
+  - [x] `GET /api/users/[id]` — public profile
+- [x] Profile pages
+  - [x] `/profile` — edit own profile (username, display_name, bio, location, avatar_url)
+  - [x] `/users/[id]` — public profile view
+- [ ] Enhancements (planned)
+  - [ ] User stats (quests completed, created, etc.)
+  - [ ] Activity feed
+  - [ ] Badges and achievements on profile
+  - [ ] Avatar upload via Supabase Storage
+  - [ ] Notification preferences
 
 ## 🔴 Planned
 
@@ -114,9 +113,9 @@
 
 ### Testing
 
-- [ ] Add unit tests
+- [x] Add unit tests (Vitest) — Zod schemas
 - [ ] Implement integration tests
-- [ ] Set up E2E testing
+- [ ] Set up E2E testing (Playwright smoke planned next)
 - [ ] Add accessibility testing
 
 ### Documentation

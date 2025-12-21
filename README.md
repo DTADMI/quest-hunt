@@ -185,15 +185,19 @@ Notes:
 
 ## 🧪 Testing
 
-### Run unit tests
-
-No automated tests are defined yet. Planned: unit tests (Vitest) and E2E (Playwright).
-
-### Run E2E tests
+### Run unit tests (Vitest)
 
 ```bash
-pnpm test:e2e
+# run all workspace tests
+pnpm test
+
+# or only web app tests
+pnpm -F web test
 ```
+
+### E2E tests (Playwright)
+
+E2E tests are planned for the next milestone. A basic smoke suite will open `/quests` and verify filters update the URL.
 
 ## 🚀 Deployment
 
@@ -299,6 +303,12 @@ Badges:
 - `GET /api/badges/stats` → summary of user badge progress (requires auth)
 - `POST /api/badges/evaluate` → trigger server-side badge evaluation (requires auth)
 
+User Profiles:
+
+- `GET /api/users/me` → current user profile
+- `PUT /api/users/me` → update current profile (username, display_name, bio, location, avatar_url)
+- `GET /api/users/:id` → public profile by id
+
 ### Database schema additions (Supabase)
 
 New tables added via migrations in `supabase/migrations`:
@@ -355,7 +365,7 @@ curl "http://localhost:3000/api/quests?q=forest&sort=oldest"
 
 ### Editor choice for quest descriptions
 
-We will use TipTap for rich text in quest descriptions (deferred for MVP).
+We use TipTap for rich text in quest descriptions.
 
 Pros:
 
@@ -366,7 +376,7 @@ Pros:
 Cons:
 
 - Heavier than a simple Markdown editor
-- Requires SSR guards for Next.js (client-only rendering)
+- Requires sanitization before rendering (we use DOMPurify)
 
-Alternatives considered: a light Markdown editor (smaller bundle, simpler), or keeping a plain textarea (fastest, but no
-formatting). For MVP we keep a plain textarea and migrate to TipTap post-MVP.
+Alternatives considered: a light Markdown editor (smaller bundle, simpler) or a plain textarea (fastest, but no
+formatting).
