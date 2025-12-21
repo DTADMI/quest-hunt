@@ -74,9 +74,11 @@
 - [x] Profile pages
   - [x] `/profile` — edit own profile (username, display_name, bio, location, avatar_url)
   - [x] `/users/[id]` — public profile view
+- [x] Tests
+  - [x] Unit tests for `GET/PUT /api/users/me` (Vitest)
 - [ ] Enhancements (planned)
   - [ ] User stats (quests completed, created, etc.)
-  - [ ] Activity feed
+  - [ ] Activity feed (DB-backed)
   - [ ] Badges and achievements on profile
   - [ ] Avatar upload via Supabase Storage
   - [ ] Notification preferences
@@ -85,10 +87,23 @@
 
 ### Social Features
 
-- [ ] Implement friend system
-- [ ] Add activity feed
-- [ ] Create messaging system
-- [ ] Add social sharing
+- [x] Friend system (API MVP)
+  - [x] `GET /api/friends` — list friendships/requests
+  - [x] `POST /api/friends` — send friend request
+  - [x] `PUT /api/friends/[id]?action=accept|decline` — respond to request
+  - [x] `DELETE /api/friends/[id]` — remove friendship
+  - [ ] UI integration (list, accept/decline in app)
+  - [ ] Supabase migrations + RLS (friends table)
+- [ ] Activity feed
+  - [x] Mocked endpoint `/api/activities` (dev only)
+  - [ ] DB-backed activities table and queries
+  - [ ] Feed UI on profile/home
+- [ ] Messaging system
+  - [ ] Schema (threads/messages)
+  - [ ] Endpoints
+  - [ ] Basic UI
+- [ ] Social sharing
+  - [ ] Share quest links (Open Graph cards)
 
 ### Advanced Map Features
 
@@ -99,10 +114,15 @@
 
 ### Gamification
 
-- [ ] Design achievement system
-- [ ] Implement leaderboards
-- [ ] Add badges and rewards
-- [ ] Create challenges and events
+- [x] Leaderboards (API MVP)
+  - [x] `GET /api/leaderboard` — top users by quests completed
+  - [ ] UI leaderboard component
+- [ ] Achievements
+  - [x] Badges endpoints exist (`/api/badges`, `/api/badges/stats`, `/api/badges/evaluate`)
+  - [ ] Map badges to achievement UI + profile display
+  - [ ] Additional badge definitions and evaluation hooks
+- [ ] Challenges and events
+  - [ ] Define schema and endpoints
 
 ### Performance & Optimization
 
@@ -114,6 +134,7 @@
 ### Testing
 
 - [x] Add unit tests (Vitest) — Zod schemas
+- [x] Add unit tests (Vitest) — API routes: profiles, friends, leaderboard
 - [ ] Implement integration tests
 - [ ] Set up E2E testing (Playwright smoke planned next)
 - [ ] Add accessibility testing
@@ -135,15 +156,17 @@
 
 ### Milestone 2: Social Features (Target: Feb 15, 2026)
 
-- [ ] Implement friend system
-- [ ] Add activity feed
-- [ ] Create messaging system
+- [x] Friend system — API MVP complete
+- [ ] Friend system — DB migrations + UI
+- [ ] Activity feed — DB-backed implementation + UI
+- [ ] Messaging system — MVP
 
 ### Milestone 3: Gamification (Target: Mar 15, 2026)
 
-- [ ] Implement achievement system
-- [ ] Add leaderboards
-- [ ] Create challenges and events
+- [x] Leaderboards — API MVP complete
+- [ ] Leaderboards — UI component
+- [ ] Achievements — badges UI + additional rules
+- [ ] Challenges and events — schema + MVP
 
 ## 📊 Progress
 

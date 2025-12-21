@@ -309,6 +309,18 @@ User Profiles:
 - `PUT /api/users/me` → update current profile (username, display_name, bio, location, avatar_url)
 - `GET /api/users/:id` → public profile by id
 
+Social:
+
+- `GET /api/friends` → list friendships and pending requests (auth)
+- `POST /api/friends` → send friend request with body `{ friend_id }` (auth)
+- `PUT /api/friends/:id?action=accept|decline` → respond to a friend request (auth)
+- `DELETE /api/friends/:id` → remove friendship (auth)
+- `GET /api/activities` → development-only mocked activity feed (will be DB-backed)
+
+Gamification:
+
+- `GET /api/leaderboard` → top users by quests completed; query: `limit` (default 10, max 50)
+
 ### Database schema additions (Supabase)
 
 New tables added via migrations in `supabase/migrations`:
