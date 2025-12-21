@@ -3,18 +3,18 @@
 import {useEffect, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
 import {
-  AlertCircle,
-  CheckCircle,
-  ChevronRight,
-  Clock,
-  Flag,
-  Heart,
-  List,
-  Map,
-  MapPin,
-  Navigation,
-  Share2,
-  Star
+    AlertCircle,
+    CheckCircle,
+    ChevronRight,
+    Clock,
+    Flag,
+    Heart,
+    List,
+    Map,
+    MapPin,
+    Navigation,
+    Share2,
+    Star
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
@@ -26,7 +26,7 @@ import {Skeleton} from '@/components/ui/skeleton';
 import {MapContainer} from '@/components/map/MapContainer';
 
 // Types
-type Difficulty = 'easy' | 'medium' | 'hard' | 'extreme';
+type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 type WaypointStatus = 'pending' | 'completed' | 'active';
 
 interface Waypoint {
@@ -71,7 +71,7 @@ interface Quest {
 
 // Mock data generator
 const generateMockQuest = (id: string): Quest => {
-    const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'extreme'];
+    const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'expert'];
     const difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
     const waypointsCount = Math.floor(Math.random() * 5) + 3; // 3-7 waypoints
 
@@ -123,7 +123,7 @@ const difficultyColors = {
     easy: 'bg-green-100 text-green-800',
     medium: 'bg-blue-100 text-blue-800',
     hard: 'bg-yellow-100 text-yellow-800',
-    extreme: 'bg-red-100 text-red-800',
+    expert: 'bg-red-100 text-red-800',
 };
 
 const statusColors = {
@@ -145,23 +145,68 @@ export default function QuestDetailPage() {
     const [showMap, setShowMap] = useState(true);
     const [isBookmarked, setIsBookmarked] = useState(false);
 
-    // Load quest data
+    // Load quest data (real API)
     useEffect(() => {
+        const controller = new AbortController();
         const loadQuest = async () => {
             try {
                 setIsLoading(true);
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 800));
-                const mockQuest = generateMockQuest(id as string);
-                setQuest(mockQuest);
-                setIsBookmarked(mockQuest.isBookmarked);
+                // Fetch quest
+                const resQuest = await fetch(`/api/quests/${id}`, {signal: controller.signal});
+                if (!resQuest.ok) throw new Error('Failed to load quest');
+                const questRow = await resQuest.json();
 
-                // Set first active waypoint if any
-                const activeIndex = mockQuest.waypoints.findIndex(wp => wp.status === 'active');
-                if (activeIndex !== -1) {
-                    setActiveWaypointIndex(activeIndex);
-                }
+                // Fetch waypoints
+                const resWp = await fetch(`/api/quests/${id}/waypoints`, {signal: controller.signal});
+                if (!resWp.ok) throw new Error('Failed to load waypoints');
+                const waypointRows = await resWp.json();
+
+                const waypoints: Waypoint[] = (waypointRows || []).map((wp: any, idx: number) => ({
+                    id: wp.id,
+                    title: wp.title ?? `Waypoint ${idx + 1}`,
+                    description: wp.description ?? '',
+                    latitude: wp.location?.coordinates?.[1] ?? 0,
+                    longitude: wp.location?.coordinates?.[0] ?? 0,
+                    order: wp.order_index ?? idx,
+                    status: idx === 0 ? 'active' : 'pending',
+                }));
+
+                const authorName = questRow?.created_by?.username ?? 'Unknown';
+                const loc = questRow?.start_location?.coordinates
+                    ? `${questRow.start_location.coordinates[1].toFixed(4)}, ${questRow.start_location.coordinates[0].toFixed(4)}`
+                    : 'Unknown';
+
+                const hydrated: Quest = {
+                    id: questRow.id,
+                    title: questRow.title,
+                    description: questRow.description ?? '',
+                    longDescription: questRow.description ?? '',
+                    difficulty: questRow.difficulty ?? 'medium',
+                    distance: 0,
+                    duration: questRow.estimated_duration_minutes ?? 0,
+                    rating: 5,
+                    reviewCount: 0,
+                    location: loc,
+                    imageUrl: 'https://picsum.photos/seed/quest/1200/600',
+                    author: {
+                        id: 'unknown',
+                        name: authorName,
+                        avatar: 'https://i.pravatar.cc/150?img=32',
+                        questsCompleted: 0,
+                    },
+                    waypoints,
+                    tags: [],
+                    isBookmarked: false,
+                    isStarted: false,
+                    isCompleted: false,
+                };
+
+                setQuest(hydrated);
+                setIsBookmarked(hydrated.isBookmarked);
+
+                if (waypoints.length > 0) setActiveWaypointIndex(0);
             } catch (err) {
+                if ((err as any).name === 'AbortError') return;
                 console.error('Error loading quest:', err);
                 setError('Failed to load quest. Please try again later.');
             } finally {
@@ -172,6 +217,7 @@ export default function QuestDetailPage() {
         if (id) {
             loadQuest();
         }
+        return () => controller.abort();
     }, [id]);
 
     // Handle waypoint completion

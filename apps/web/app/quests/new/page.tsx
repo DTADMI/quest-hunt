@@ -8,6 +8,7 @@ import * as z from 'zod';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
+import {TipTapEditor} from '@/components/editor/TipTapEditor';
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '@/components/ui/form';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {MapContainer} from '@/components/map/MapContainer';
@@ -138,7 +139,23 @@ export default function CreateQuestPage() {
 
     const removeWaypoint = (id: string) => {
         const waypoints = form.getValues('waypoints').filter(wp => wp.id !== id);
-        form.setValue('waypoints', waypoints);
+        // Reindex order
+        const reindexed = waypoints.map((wp, idx) => ({...wp, order: idx}));
+        form.setValue('waypoints', reindexed);
+    };
+
+    const moveWaypoint = (id: string, direction: 'up' | 'down') => {
+        const waypoints = [...form.getValues('waypoints')];
+        const index = waypoints.findIndex(w => w.id === id);
+        if (index === -1) return;
+        const target = direction === 'up' ? index - 1 : index + 1;
+        if (target < 0 || target >= waypoints.length) return;
+        const tmp = waypoints[index];
+        waypoints[index] = waypoints[target];
+        waypoints[target] = tmp;
+        // Update order values to match new positions
+        const reindexed = waypoints.map((wp, idx) => ({...wp, order: idx}));
+        form.setValue('waypoints', reindexed);
     };
 
     const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
@@ -201,11 +218,13 @@ export default function CreateQuestPage() {
                                         <FormItem>
                                             <FormLabel>Description</FormLabel>
                                             <FormControl>
-                                                <Textarea
-                                                    placeholder="Describe your quest in detail..."
-                                                    className="min-h-[200px]"
-                                                    {...field}
-                                                />
+                                                <div>
+                                                    <TipTapEditor
+                                                        value={field.value || ''}
+                                                        onChange={(html) => field.onChange(html)}
+                                                        placeholder="Describe your quest in detail..."
+                                                    />
+                                                </div>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -291,17 +310,25 @@ export default function CreateQuestPage() {
                                         <div className="space-y-4">
                                             {form.getValues('waypoints').map((waypoint, index) => (
                                                 <div key={waypoint.id} className="border rounded-lg p-4 space-y-3">
-                                                    <div className="flex justify-between items-start">
+                                                    <div className="flex justify-between items-center gap-2">
                                                         <h4 className="font-medium">Waypoint {index + 1}</h4>
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => removeWaypoint(waypoint.id)}
-                                                            className="text-destructive hover:bg-destructive/10"
-                                                        >
-                                                            Remove
-                                                        </Button>
+                                                        <div className="flex items-center gap-2">
+                                                            <Button type="button" variant="outline" size="sm"
+                                                                    disabled={index === 0}
+                                                                    onClick={() => moveWaypoint(waypoint.id, 'up')}>Up</Button>
+                                                            <Button type="button" variant="outline" size="sm"
+                                                                    disabled={index === form.getValues('waypoints').length - 1}
+                                                                    onClick={() => moveWaypoint(waypoint.id, 'down')}>Down</Button>
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => removeWaypoint(waypoint.id)}
+                                                                className="text-destructive hover:bg-destructive/10"
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
                                                     </div>
 
                                                     <Input

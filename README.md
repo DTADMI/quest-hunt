@@ -63,6 +63,7 @@ community.
 - State/Data: TanStack Query v5
 - Maps: MapLibre GL (OpenStreetMap tiles by default)
 - Forms/Validation: React Hook Form + Zod
+- Rich text editor: TipTap for quest descriptions (sanitized on render)
 - Authentication: Supabase Auth via `@supabase/ssr` (cookie-based SSR helpers)
 - Icons/Notifications: Lucide React, Sonner
 
@@ -75,6 +76,13 @@ community.
 - Storage/Realtime: Supabase Storage and Realtime
 - Structure for forward-compatibility: shared Zod schemas and service modules under `apps/web/lib/server/*` to enable an
   easy migration to a NestJS service in `apps/api` later if needed
+
+#### Rich text (TipTap) decision
+
+- Pros: Excellent UX, extensible nodes/marks, collaborative potential; good React integration.
+- Cons: Outputs HTML/ProseMirror JSON that must be sanitized before rendering; slightly heavier bundle than markdown.
+- Alternatives: Simple Markdown editor (lighter, but fewer formatting options).
+- Security: We sanitize HTML on the client using `dompurify` before injecting into the DOM.
 
 ### DevOps
 
