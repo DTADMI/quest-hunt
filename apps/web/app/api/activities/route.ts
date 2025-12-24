@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server';
-import {verifyAuth} from '@/lib/auth';
+import {requireAuth} from '@/lib/server/auth';
 import {Activity, ActivityType} from '@/types/activity';
 
 // Mock data generator for development
@@ -102,11 +102,9 @@ function generateMockActivities(count: number, userId: string): Activity[] {
 
 export async function GET(request: Request) {
     try {
-        // Verify authentication
-        const session = await verifyAuth(request);
-        if (!session) {
-            return new NextResponse('Unauthorized', {status: 401});
-        }
+        // Verify authentication (SSR cookies via Supabase)
+        const {user} = await requireAuth();
+        if (!user) return new NextResponse('Unauthorized', {status: 401});
 
         // Get query parameters
         const {searchParams} = new URL(request.url);
@@ -115,7 +113,7 @@ export async function GET(request: Request) {
         const type = searchParams.get('type') as ActivityType | null;
 
         // In a real app, you would fetch from your database here
-        const allActivities = generateMockActivities(50, session.userId);
+        const allActivities = generateMockActivities(50, user.id);
 
         // Filter by type if specified
         const filteredActivities = type && type !== 'all'
