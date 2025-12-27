@@ -5,7 +5,10 @@ export async function startQuest(questId: string, userId: string) {
     // Upsert-like: insert or ignore if exists
     const {data, error} = await supabase
         .from('quest_progress')
-        .upsert({quest_id: questId, user_id: userId, status: 'started'}, {onConflict: 'quest_id,user_id'})
+        .upsert(
+            {quest_id: questId, user_id: userId, status: 'started'},
+            {onConflict: 'quest_id,user_id'}
+        )
         .select()
         .single();
     if (error) throw error;

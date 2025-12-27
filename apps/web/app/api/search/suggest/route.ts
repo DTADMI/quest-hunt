@@ -6,7 +6,7 @@ import {suggestUsers} from '@/lib/search/user-search';
 export async function GET(request: Request) {
     const {searchParams} = new URL(request.url);
     const query = searchParams.get('q') || '';
-    const type = searchParams.get('type') as 'all' | 'quests' | 'users' | null || 'all';
+    const type = (searchParams.get('type') as 'all' | 'quests' | 'users' | null) || 'all';
     const limit = parseInt(searchParams.get('limit') || '5');
 
     try {
@@ -24,9 +24,6 @@ export async function GET(request: Request) {
         });
     } catch (error) {
         console.error('Search suggest error:', error);
-        return NextResponse.json(
-            {error: 'Failed to get search suggestions'},
-            {status: 500}
-        );
+        return NextResponse.json({error: 'Failed to get search suggestions'}, {status: 500});
     }
 }

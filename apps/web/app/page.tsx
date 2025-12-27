@@ -11,8 +11,8 @@ export default function Home() {
                     <span className="text-primary">Geocaching Adventures</span>
                 </h1>
                 <p className="max-w-2xl text-lg text-muted-foreground">
-                    Join the ultimate treasure hunting experience. Create quests, explore hidden locations, and
-                    connect with fellow adventurers.
+                    Join the ultimate treasure hunting experience. Create quests, explore hidden locations,
+                    and connect with fellow adventurers.
                 </p>
                 <div className="flex flex-col gap-4 sm:flex-row">
                     <Button size="lg" asChild>

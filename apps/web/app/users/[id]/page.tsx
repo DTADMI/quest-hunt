@@ -13,7 +13,9 @@ export default async function PublicUserPage({params}: { params: { id: string } 
         return (
             <div className="container py-12 text-center">
                 <h1 className="text-2xl font-semibold">User not found</h1>
-                <p className="text-muted-foreground mt-2">The profile you are looking for does not exist.</p>
+                <p className="text-muted-foreground mt-2">
+                    The profile you are looking for does not exist.
+                </p>
             </div>
         );
     }
@@ -22,8 +24,13 @@ export default async function PublicUserPage({params}: { params: { id: string } 
         <div className="container py-8 max-w-3xl">
             <div className="flex items-center gap-4 mb-6">
                 <Avatar className="h-16 w-16">
-                    <AvatarImage src={profile.avatar_url || ''} alt={profile.display_name || profile.username}/>
-                    <AvatarFallback>{(profile.display_name || profile.username || 'U').slice(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage
+                        src={profile.avatar_url || ''}
+                        alt={profile.display_name || profile.username}
+                    />
+                    <AvatarFallback>
+                        {(profile.display_name || profile.username || 'U').slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
                 </Avatar>
                 <div>
                     <h1 className="text-2xl font-bold">{profile.display_name || profile.username}</h1>
@@ -35,9 +42,7 @@ export default async function PublicUserPage({params}: { params: { id: string } 
                 <div className="text-sm text-muted-foreground">📍 {profile.location}</div>
             )}
 
-            {profile.bio && (
-                <p className="mt-4 whitespace-pre-line">{profile.bio}</p>
-            )}
+            {profile.bio && <p className="mt-4 whitespace-pre-line">{profile.bio}</p>}
         </div>
     );
 }

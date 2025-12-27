@@ -53,7 +53,9 @@ class WebSocketService {
 
                     if (this.reconnectAttempts < this.maxReconnectAttempts) {
                         this.reconnectAttempts++;
-                        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+                        console.log(
+                            `Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`
+                        );
                         setTimeout(() => this.connect(), this.reconnectInterval);
                     } else {
                         console.error('Max reconnection attempts reached');
@@ -113,7 +115,7 @@ class WebSocketService {
     public markActivityAsRead(activityId: string): void {
         this.sendMessage({
             type: 'activity_read',
-            data: {activityId}
+            data: {activityId},
         });
     }
 
@@ -121,15 +123,16 @@ class WebSocketService {
         // In development, use ws://localhost:3000 for local development
         // In production, use wss://your-api-domain.com
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = process.env.NODE_ENV === 'production'
-            ? 'your-api-domain.com'
-            : `${window.location.hostname}:3000`;
+        const host =
+            process.env.NODE_ENV === 'production'
+                ? 'your-api-domain.com'
+                : `${window.location.hostname}:3000`;
         return `${protocol}//${host}/api/ws`;
     }
 
     private handleMessage(message: WebSocketMessage): void {
         const callbacks = this.callbacks.get(message.type) || [];
-        callbacks.forEach(callback => callback(message));
+        callbacks.forEach((callback) => callback(message));
     }
 }
 

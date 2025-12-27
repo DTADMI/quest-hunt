@@ -56,7 +56,7 @@ export async function searchQuests(
         ]);
 
         return {
-            results: results.map(quest => ({
+            results: results.map((quest) => ({
                 id: quest.id,
                 title: quest.title,
                 description: quest.description,
@@ -106,7 +106,7 @@ export async function suggestQuests(query: string, limit: number = 5): Promise<S
             },
         });
 
-        return results.map(quest => ({
+        return results.map((quest) => ({
             id: quest.id,
             title: quest.title,
             description: quest.description,

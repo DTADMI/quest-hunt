@@ -3,19 +3,22 @@ import {requireAuth} from '@/lib/server/auth';
 import {visitWaypoint} from '@/lib/server/progress';
 import {visitWaypointSchema} from '@/lib/server/schemas';
 
-export async function POST(
-    request: Request,
-    {params}: { params: { wpId: string } }
-) {
+export async function POST(request: Request, {params}: { params: Promise<{ wpId: string }> }) {
     try {
+        const {wpId} = await params;
         const {user} = await requireAuth();
-        if (!user) return NextResponse.json({error: 'Not authenticated'}, {status: 401});
+        if (!user) {
+            return NextResponse.json({error: 'Not authenticated'}, {status: 401});
+        }
         const body = await request.json().catch(() => ({}));
         const parsed = visitWaypointSchema.safeParse(body);
         if (!parsed.success) {
-            return NextResponse.json({error: 'Invalid request data', details: parsed.error.issues}, {status: 400});
+            return NextResponse.json(
+                {error: 'Invalid request data', details: parsed.error.issues},
+                {status: 400}
+            );
         }
-        const res = await visitWaypoint(params.wpId, user.id, parsed.data.proof);
+        const res = await visitWaypoint(wpId, user.id, parsed.data.proof);
         return NextResponse.json(res, {status: 201});
     } catch (e) {
         console.error('Error visiting waypoint', e);

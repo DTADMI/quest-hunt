@@ -48,7 +48,7 @@ export async function searchUsers(
         ]);
 
         return {
-            results: results.map(user => ({
+            results: results.map((user) => ({
                 id: user.id,
                 name: user.name,
                 username: user.username,
@@ -90,7 +90,7 @@ export async function suggestUsers(query: string, limit: number = 5): Promise<Se
             take: limit,
         });
 
-        return results.map(user => ({
+        return results.map((user) => ({
             id: user.id,
             name: user.name,
             username: user.username,

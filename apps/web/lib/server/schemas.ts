@@ -42,9 +42,11 @@ export const waypointCreateSchema = z.object({
     qr_code_data: z.string().max(512).optional(),
 });
 
-export const waypointUpdateSchema = waypointCreateSchema.partial().refine((data) => Object.keys(data).length > 0, {
+export const waypointUpdateSchema = waypointCreateSchema
+    .partial()
+    .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided for update',
-});
+    });
 
 export const visitWaypointSchema = z.object({
     proof: z
@@ -56,12 +58,14 @@ export const visitWaypointSchema = z.object({
 });
 
 // User profile
-export const profileUpdateSchema = z.object({
+export const profileUpdateSchema = z
+    .object({
     username: z.string().min(3).max(32).optional(),
     display_name: z.string().min(1).max(64).optional(),
     bio: z.string().max(500).optional(),
     location: z.string().max(120).optional(),
     avatar_url: z.string().url().max(300).optional(),
-}).refine((data) => Object.keys(data).length > 0, {
+    })
+    .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided for update',
-});
+    });

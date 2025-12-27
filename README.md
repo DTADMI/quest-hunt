@@ -18,21 +18,25 @@ community.
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/quest-hunt.git
    cd quest-hunt
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
     - Copy the root env example into the Next.js app (the app reads env from its folder):
+
    ```bash
    cp .env.example apps/web/.env.local
    ```
+
     - Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project settings.
     - If you use hosted map tiles, set the map token as well (see Environment Variables below).
 
@@ -122,18 +126,21 @@ quest-hunt/
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/questhunt.git
    cd questhunt
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
    Copy the example and update with your credentials:
+
    ```bash
    cp .env.example apps/web/.env.local
    ```
@@ -147,6 +154,7 @@ quest-hunt/
       ```
 
 5. **Run database migrations**
+
    ```bash
    pnpm db:push    # applies SQL in supabase/migrations
    pnpm db:seed    # optional: seeds demo data if configured
@@ -219,6 +227,7 @@ pnpm build
 ### Database Migrations in Production
 
 Use the Supabase dashboard or Supabase CLI to manage migrations against your hosted project. Root helpers:
+
 ```bash
 pnpm db:push   # push SQL to Supabase project configured by CLI in ./supabase
 pnpm db:seed   # seed helper script
@@ -229,7 +238,7 @@ pnpm db:seed   # seed helper script
 - Key docs in repo:
     - geocaching-app-documentation.md (high-level architecture and choices)
     - action-plan.md (roadmap and current status)
-    - supabase/migrations/* (DB schema)
+    - supabase/migrations/\* (DB schema)
 
 ## 🔒 Security Notes
 
@@ -315,16 +324,26 @@ Social:
 - `POST /api/friends` → send friend request with body `{ friend_id }` (auth)
 - `PUT /api/friends/:id?action=accept|decline` → respond to a friend request (auth)
 - `DELETE /api/friends/:id` → remove friendship (auth)
-- `GET /api/activities` → development-only mocked activity feed (will be DB-backed)
+- `GET /api/activities` → DB-backed activity feed (auth)
+- `GET /api/users/me/stats` → summary of user quest statistics (auth)
+- `GET /api/users/me/badges` → list of user unlocked badges (auth)
 
 Gamification:
 
 - `GET /api/leaderboard` → top users by quests completed; query: `limit` (default 10, max 50)
 
+Admin:
+
+- `GET /admin/settings` → Admin-only settings and feature flags management
+- `POST /api/admin/feature-flags` → Toggle feature flags (Admin only)
+
 ### Database schema additions (Supabase)
 
 New tables added via migrations in `supabase/migrations`:
 
+- `profiles` (extended user profile data)
+- `friends` (user connections and status)
+- `activities` (system-wide activity log)
 - `quest_progress` (track user progress per quest)
 - `waypoint_visits` (track visits per waypoint)
 - `badges`, `user_badges` (simple badge system)

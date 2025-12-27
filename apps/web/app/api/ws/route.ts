@@ -17,13 +17,15 @@ wss.on('connection', (ws, request, client) => {
     console.log(`Client connected: ${connectionId}`);
 
     // Send connection established message
-    ws.send(JSON.stringify({
-        type: 'connection_established',
-        data: {
-            message: 'Connection established',
-            connectionId,
-        },
-    }));
+    ws.send(
+        JSON.stringify({
+            type: 'connection_established',
+            data: {
+                message: 'Connection established',
+                connectionId,
+            },
+        })
+    );
 
     // Handle incoming messages
     ws.on('message', (message) => {
@@ -64,11 +66,14 @@ wss.on('connection', (ws, request, client) => {
 // Send activity to a specific user
 function sendToUser(userId: string, activity: any) {
     const ws = clients.get(userId);
-    if (ws && ws.readyState === 1) { // 1 = OPEN
-        ws.send(JSON.stringify({
-            type: 'new_activity',
-            data: activity,
-        }));
+    if (ws && ws.readyState === 1) {
+        // 1 = OPEN
+        ws.send(
+            JSON.stringify({
+                type: 'new_activity',
+                data: activity,
+            })
+        );
     }
 }
 
@@ -79,9 +84,10 @@ function broadcast(activity: any, userIds: string[]) {
         data: activity,
     });
 
-    userIds.forEach(userId => {
+    userIds.forEach((userId) => {
         const ws = clients.get(userId);
-        if (ws && ws.readyState === 1) { // 1 = OPEN
+        if (ws && ws.readyState === 1) {
+            // 1 = OPEN
             ws.send(message);
         }
     });

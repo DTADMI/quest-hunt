@@ -50,12 +50,17 @@ export async function POST(request: Request) {
         const {data: existing, error: checkErr} = await supabase
             .from('friends')
             .select('id, status')
-            .or(`and(user_id.eq.${user.id},friend_id.eq.${friend_id}),and(user_id.eq.${friend_id},friend_id.eq.${user.id})`)
+            .or(
+                `and(user_id.eq.${user.id},friend_id.eq.${friend_id}),and(user_id.eq.${friend_id},friend_id.eq.${user.id})`
+            )
             .limit(1)
             .maybeSingle();
         if (checkErr) throw checkErr;
         if (existing) {
-            return NextResponse.json({error: 'Friend request already exists', status: existing.status}, {status: 409});
+            return NextResponse.json(
+                {error: 'Friend request already exists', status: existing.status},
+                {status: 409}
+            );
         }
 
         const {data, error} = await supabase
@@ -68,7 +73,10 @@ export async function POST(request: Request) {
     } catch (e: any) {
         if (e?.message?.includes('relation')) {
             // Table not present yet
-            return NextResponse.json({error: 'Friends feature not enabled (table missing)'}, {status: 501});
+            return NextResponse.json(
+                {error: 'Friends feature not enabled (table missing)'},
+                {status: 501}
+            );
         }
         console.error('friends POST error', e);
         return NextResponse.json({error: 'Failed to create friend request'}, {status: 500});

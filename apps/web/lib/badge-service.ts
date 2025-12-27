@@ -1,11 +1,11 @@
 import {
-  Badge,
-  BadgeProgressUpdate,
-  BadgeStats,
-  BadgeTriggerEvent,
-  BadgeUnlockEvent,
-  BadgeWithProgress,
-  UserBadge
+    Badge,
+    BadgeProgressUpdate,
+    BadgeStats,
+    BadgeTriggerEvent,
+    BadgeUnlockEvent,
+    BadgeWithProgress,
+    UserBadge,
 } from '@/types/badges';
 import {webSocketService} from './websocket';
 
@@ -60,7 +60,7 @@ class BadgeService {
 
     private constructor() {
         // Initialize with mock data
-        MOCK_BADGES.forEach(badge => this.badges.set(badge.id, badge));
+        MOCK_BADGES.forEach((badge) => this.badges.set(badge.id, badge));
         this.loadUserBadges();
     }
 
@@ -76,10 +76,13 @@ class BadgeService {
     }
 
     public async getUserBadges(userId: string): Promise<UserBadge[]> {
-        return Array.from(this.userBadges.values()).filter(b => b.userId === userId);
+        return Array.from(this.userBadges.values()).filter((b) => b.userId === userId);
     }
 
-    public async getBadgeWithProgress(userId: string, badgeId: string): Promise<BadgeWithProgress | null> {
+    public async getBadgeWithProgress(
+        userId: string,
+        badgeId: string
+    ): Promise<BadgeWithProgress | null> {
         const badge = this.badges.get(badgeId);
         if (!badge) return null;
 
@@ -98,7 +101,7 @@ class BadgeService {
     public async getBadgeStats(userId: string): Promise<BadgeStats> {
         const badges = await this.getBadges();
         const userBadges = await this.getUserBadges(userId);
-        const unlockedBadges = userBadges.filter(b => b.isUnlocked);
+        const unlockedBadges = userBadges.filter((b) => b.isUnlocked);
 
         const byRarity: Record<string, { total: number; unlocked: number }> = {
             common: {total: 0, unlocked: 0},
@@ -111,8 +114,15 @@ class BadgeService {
         const byType: Record<string, { total: number; unlocked: number }> = {};
 
         // Initialize badge types
-        const badgeTypes = ['quest_completion', 'waypoint_milestone', 'explorer', 'social', 'streak', 'special'];
-        badgeTypes.forEach(type => {
+        const badgeTypes = [
+            'quest_completion',
+            'waypoint_milestone',
+            'explorer',
+            'social',
+            'streak',
+            'special',
+        ];
+        badgeTypes.forEach((type) => {
             byType[type] = {total: 0, unlocked: 0};
         });
 
@@ -121,7 +131,7 @@ class BadgeService {
             byRarity[badge.rarity].total++;
             byType[badge.type].total++;
 
-            const userBadge = userBadges.find(b => b.badgeId === badge.id);
+            const userBadge = userBadges.find((b) => b.badgeId === badge.id);
             if (userBadge?.isUnlocked) {
                 byRarity[badge.rarity].unlocked++;
                 byType[badge.type].unlocked++;
@@ -133,17 +143,17 @@ class BadgeService {
             unlockedBadges
                 .sort((a, b) => (b.unlockedAt || '').localeCompare(a.unlockedAt || ''))
                 .slice(0, 5)
-                .map(badge => this.getBadgeWithProgress(userId, badge.badgeId))
+                .map((badge) => this.getBadgeWithProgress(userId, badge.badgeId))
         );
 
         // Get closest to unlocking (top 5)
         const closestToUnlock = await Promise.all(
             badges
-                .filter(badge => {
-                    const userBadge = userBadges.find(b => b.badgeId === badge.id);
+                .filter((badge) => {
+                    const userBadge = userBadges.find((b) => b.badgeId === badge.id);
                     return !userBadge?.isUnlocked;
                 })
-                .map(async badge => {
+                .map(async (badge) => {
                     const withProgress = await this.getBadgeWithProgress(userId, badge.id);
                     return withProgress!;
                 })
@@ -166,7 +176,9 @@ class BadgeService {
             byRarity,
             byType,
             recentUnlocks: recentUnlocks.filter((b): b is BadgeWithProgress => b !== null),
-            nextClosestBadges: closestToUnlock.slice(0, 5).filter((b): b is BadgeWithProgress => b !== null),
+            nextClosestBadges: closestToUnlock
+                .slice(0, 5)
+                .filter((b): b is BadgeWithProgress => b !== null),
         };
     }
 
@@ -220,7 +232,10 @@ class BadgeService {
         return newBadge;
     }
 
-    public async updateBadge(id: string, updates: Partial<Omit<Badge, 'id' | 'createdAt'>>): Promise<Badge | null> {
+    public async updateBadge(
+        id: string,
+        updates: Partial<Omit<Badge, 'id' | 'createdAt'>>
+    ): Promise<Badge | null> {
         const badge = this.badges.get(id);
         if (!badge) return null;
 
@@ -241,7 +256,7 @@ class BadgeService {
     private async loadUserBadges() {
         // In a real app, this would fetch from your API
         const mockUserBadges: UserBadge[] = [];
-        this.userBadges = new Map(mockUserBadges.map(badge => [badge.badgeId, badge]));
+        this.userBadges = new Map(mockUserBadges.map((badge) => [badge.badgeId, badge]));
     }
 
     private async updateBadgeProgress(update: BadgeProgressUpdate): Promise<UserBadge> {

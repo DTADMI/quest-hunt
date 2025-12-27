@@ -32,7 +32,12 @@ export async function createWaypoint(questId: string, values: any, userId: strin
     return data;
 }
 
-export async function updateWaypoint(questId: string, waypointId: string, values: any, userId: string) {
+export async function updateWaypoint(
+    questId: string,
+    waypointId: string,
+    values: any,
+    userId: string
+) {
     const supabase = createClient();
     // ownership via join
     const {data: join, error: jErr} = await supabase

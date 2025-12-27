@@ -59,40 +59,36 @@ export function BadgeCard({
                             </div>
                         )}
 
-                        <div className={cn(
-                            'h-16 w-16 rounded-full flex items-center justify-center text-3xl mb-3',
-                            isUnlocked
-                                ? 'bg-white/20 dark:bg-black/20'
-                                : 'bg-muted/30 dark:bg-muted/50',
-                            !isUnlocked && 'saturate-0 opacity-70'
-                        )}>
+                        <div
+                            className={cn(
+                                'h-16 w-16 rounded-full flex items-center justify-center text-3xl mb-3',
+                                isUnlocked ? 'bg-white/20 dark:bg-black/20' : 'bg-muted/30 dark:bg-muted/50',
+                                !isUnlocked && 'saturate-0 opacity-70'
+                            )}
+                        >
                             {badge.icon}
                         </div>
 
-                        <h3 className={cn(
-                            'font-medium mb-1',
-                            !isUnlocked && 'text-muted-foreground'
-                        )}>
+                        <h3 className={cn('font-medium mb-1', !isUnlocked && 'text-muted-foreground')}>
                             {badge.name}
                         </h3>
 
-                        <p className={cn(
-                            'text-sm mb-2',
-                            isUnlocked ? 'text-muted-foreground' : 'text-muted-foreground/70'
-                        )}>
+                        <p
+                            className={cn(
+                                'text-sm mb-2',
+                                isUnlocked ? 'text-muted-foreground' : 'text-muted-foreground/70'
+                            )}
+                        >
                             {badge.description}
                         </p>
 
                         {showProgress && !isUnlocked && (
                             <div className="w-full bg-muted-foreground/10 rounded-full h-2 mt-2">
                                 <div
-                                    className={cn(
-                                        'h-full rounded-full',
-                                        {
-                                            'bg-gray-400': !isUnlocked,
-                                            'bg-green-500': isUnlocked,
-                                        }
-                                    )}
+                                    className={cn('h-full rounded-full', {
+                                        'bg-gray-400': !isUnlocked,
+                                        'bg-green-500': isUnlocked,
+                                    })}
                                     style={{width: `${progressPercentage}%`}}
                                 />
                             </div>
@@ -110,10 +106,7 @@ export function BadgeCard({
                     <div className="space-y-1">
                         <div className="flex items-center justify-between">
                             <span className="font-semibold">{badge.name}</span>
-                            <span className={cn(
-                                'text-xs px-2 py-0.5 rounded-full',
-                                rarityColors[badge.rarity]
-                            )}>
+                            <span className={cn('text-xs px-2 py-0.5 rounded-full', rarityColors[badge.rarity])}>
                 {badge.rarity.charAt(0).toUpperCase() + badge.rarity.slice(1)}
               </span>
                         </div>
@@ -130,9 +123,7 @@ export function BadgeCard({
                         ) : null}
 
                         <div className="flex justify-between items-center mt-2 pt-2 border-t border-border">
-              <span className="text-xs text-muted-foreground">
-                {badge.points} XP
-              </span>
+                            <span className="text-xs text-muted-foreground">{badge.points} XP</span>
                             <span className="text-xs text-muted-foreground">
                 {isUnlocked ? 'Unlocked' : 'Locked'}
               </span>

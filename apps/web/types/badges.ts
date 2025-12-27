@@ -73,11 +73,11 @@ export type BadgeUnlockEvent = {
 
 // Event types that can trigger badge progress
 export type BadgeTriggerEvent =
-    | { type: 'quest_completed', questId: string, userId: string }
-    | { type: 'waypoint_reached', waypointId: string, questId: string, userId: string }
-    | { type: 'friend_added', userId: string, friendId: string }
-    | { type: 'login_streak', userId: string, streak: number }
-    | { type: 'quest_created', questId: string, userId: string };
+    | { type: 'quest_completed'; questId: string; userId: string }
+    | { type: 'waypoint_reached'; waypointId: string; questId: string; userId: string }
+    | { type: 'friend_added'; userId: string; friendId: string }
+    | { type: 'login_streak'; userId: string; streak: number }
+    | { type: 'quest_created'; questId: string; userId: string };
 
 // Badge category with badges
 export interface BadgeCategory {

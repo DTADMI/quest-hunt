@@ -13,7 +13,7 @@ export async function getSession() {
 export async function requireAuth() {
     const session = await getSession();
     if (!session) {
-        return {user: null as const, session: null as const};
+        return {user: null, session: null};
     }
     return {user: session.user, session};
 }

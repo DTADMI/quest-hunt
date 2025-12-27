@@ -24,10 +24,12 @@ const questFormSchema = z.object({
     estimated_duration_minutes: z.number().min(1).optional(),
 });
 
-type QuestFormValues = z.infer<typeof questFormSchema>;
+interface QuestFormValuesExtended extends QuestFormValues {
+    id?: string;
+}
 
 interface QuestFormProps {
-    initialData?: Partial<QuestFormValues>;
+    initialData?: Partial<QuestFormValuesExtended>;
     onSubmit: (data: QuestFormValues) => Promise<void>;
     isSubmitting: boolean;
 }
@@ -114,10 +116,7 @@ export function QuestForm({initialData, onSubmit, isSubmitting}: QuestFormProps)
                         render={({field}) => (
                             <FormItem>
                                 <FormLabel>Difficulty</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                >
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select difficulty"/>
@@ -158,12 +157,7 @@ export function QuestForm({initialData, onSubmit, isSubmitting}: QuestFormProps)
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <FormLabel>Starting Location</FormLabel>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={getCurrentLocation}
-                        >
+                        <Button type="button" variant="outline" size="sm" onClick={getCurrentLocation}>
                             <MapPin className="h-4 w-4 mr-2"/>
                             {currentLocation ? 'Update My Location' : 'Use My Current Location'}
                         </Button>
@@ -183,9 +177,7 @@ export function QuestForm({initialData, onSubmit, isSubmitting}: QuestFormProps)
                                             {...field}
                                             value={field.value || ''}
                                             onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value ? Number(e.target.value) : undefined
-                                                )
+                                                field.onChange(e.target.value ? Number(e.target.value) : undefined)
                                             }
                                         />
                                     </FormControl>
@@ -207,9 +199,7 @@ export function QuestForm({initialData, onSubmit, isSubmitting}: QuestFormProps)
                                             {...field}
                                             value={field.value || ''}
                                             onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value ? Number(e.target.value) : undefined
-                                                )
+                                                field.onChange(e.target.value ? Number(e.target.value) : undefined)
                                             }
                                         />
                                     </FormControl>
@@ -230,9 +220,7 @@ export function QuestForm({initialData, onSubmit, isSubmitting}: QuestFormProps)
                         Cancel
                     </Button>
                     <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                        )}
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                         {initialData?.id ? 'Update Quest' : 'Create Quest'}
                     </Button>
                 </div>

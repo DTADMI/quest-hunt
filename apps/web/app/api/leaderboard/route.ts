@@ -13,11 +13,11 @@ export async function GET(request: Request) {
         const limit = Math.min(parseInt(searchParams.get('limit') || '10', 10), 50);
 
         // Prefer a view or SQL, but use RPC-less aggregation for MVP
-        const {data, error} = await supabase
-            .from('quest_progress')
-            .select('user_id', {count: 'exact'}) as any;
+        const {error} = (await supabase.from('quest_progress').select('user_id', {count: 'exact'})) as any;
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
         // Supabase JS can't group on the client side; fetch minimal aggregate via SQL if available.
         // Fallback: fetch completed rows and aggregate here (may be heavy for large datasets).
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             .slice(0, limit);
 
         // Optionally join profiles for display names
-        const userIds = items.map(i => i.user_id);
+        const userIds = items.map((i) => i.user_id);
         let profilesById: Record<string, any> = {};
         if (userIds.length) {
             const {data: profiles, error: pErr} = await supabase
@@ -45,11 +45,11 @@ export async function GET(request: Request) {
                 .select('id, username, display_name, avatar_url')
                 .in('id', userIds);
             if (!pErr) {
-                profilesById = Object.fromEntries((profiles ?? []).map(p => [p.id, p]));
+                profilesById = Object.fromEntries((profiles ?? []).map((p) => [p.id, p]));
             }
         }
 
-        const enriched = items.map(i => ({
+        const enriched = items.map((i) => ({
             rank: 0, // fill next
             ...i,
             user: profilesById[i.user_id] ?? {id: i.user_id},

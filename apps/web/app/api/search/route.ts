@@ -7,7 +7,7 @@ import {searchUsers, suggestUsers} from '@/lib/search/user-search';
 export async function GET(request: Request) {
     const {searchParams} = new URL(request.url);
     const query = searchParams.get('q') || '';
-    const type = searchParams.get('type') as 'all' | 'quests' | 'users' | null || 'all';
+    const type = (searchParams.get('type') as 'all' | 'quests' | 'users' | null) || 'all';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const isSuggest = searchParams.get('suggest') === 'true';
@@ -53,9 +53,6 @@ export async function GET(request: Request) {
         });
     } catch (error) {
         console.error('Search error:', error);
-        return NextResponse.json(
-            {error: 'Failed to perform search'},
-            {status: 500}
-        );
+        return NextResponse.json({error: 'Failed to perform search'}, {status: 500});
     }
 }

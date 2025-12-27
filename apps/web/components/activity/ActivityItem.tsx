@@ -86,11 +86,11 @@ export function ActivityItem({activity, onMarkAsRead}: ActivityItemProps) {
                         )}
                     </div>
 
-                    <p className="mt-1">
-                        {getActivityMessage(activity)}
-                    </p>
+                    <p className="mt-1">{getActivityMessage(activity)}</p>
 
-                    {(activity.type === 'quest_completed' || activity.type === 'quest_started' || activity.type === 'waypoint_reached') && (
+                    {(activity.type === 'quest_completed' ||
+                        activity.type === 'quest_started' ||
+                        activity.type === 'waypoint_reached') && (
                         <div className="mt-2">
                             <Link href={`/quests/${activity.quest.id}`}>
                                 <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer">
@@ -146,7 +146,7 @@ export function ActivityItem({activity, onMarkAsRead}: ActivityItemProps) {
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 rounded-full"
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                             e.stopPropagation();
                             handleMarkAsRead();
                         }}

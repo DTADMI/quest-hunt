@@ -1,19 +1,21 @@
 import {NextResponse} from 'next/server';
 import {createClient} from '@/lib/supabase/server';
 
-export async function GET(
-    request: Request,
-    {params}: { params: { id: string } }
-) {
+export async function GET(request: Request, {params}: { params: Promise<{ id: string }> }) {
     try {
+        const {id} = await params;
         const supabase = createClient();
         const {data, error} = await supabase
             .from('profiles')
             .select('id, username, display_name, avatar_url, bio, location, created_at')
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
-        if (error) throw error;
-        if (!data) return NextResponse.json({error: 'User not found'}, {status: 404});
+        if (error) {
+            throw error;
+        }
+        if (!data) {
+            return NextResponse.json({error: 'User not found'}, {status: 404});
+        }
         return NextResponse.json(data);
     } catch (e) {
         console.error('profiles/[id] GET error', e);

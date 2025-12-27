@@ -16,7 +16,9 @@ const mockIn = vi.fn();
 const mockFrom = vi.fn((table: string) => {
     if (table === 'quest_progress') {
         return {
-            select: (cols: string) => ({eq: (col: string, val: string) => ({data: rows, error: null})}),
+            select: (cols: string) => ({
+                eq: (col: string, val: string) => ({data: rows, error: null}),
+            }),
         } as any;
     }
     if (table === 'profiles') {
@@ -24,8 +26,8 @@ const mockFrom = vi.fn((table: string) => {
             select: () => ({
                 in: (_: string, ids: string[]) => ({
                     data: ids.map((id) => ({id, username: id})),
-                    error: null
-                })
+                    error: null,
+                }),
             }),
         } as any;
     }
@@ -35,8 +37,10 @@ const mockFrom = vi.fn((table: string) => {
 vi.mock('@/lib/supabase/server', () => ({
     createClient: () => ({
         from: mockFrom,
-        auth: {getSession: vi.fn().mockResolvedValue({data: {session: {user: {id: 'user-1'}}}})}
-    })
+        auth: {
+            getSession: vi.fn().mockResolvedValue({data: {session: {user: {id: 'user-1'}}}}),
+        },
+    }),
 }));
 
 describe('API /api/leaderboard', () => {

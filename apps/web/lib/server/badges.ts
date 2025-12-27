@@ -2,7 +2,10 @@ import {createClient} from '@/lib/supabase/server';
 
 export async function listBadges() {
     const supabase = createClient();
-    const {data, error} = await supabase.from('badges').select('*').order('points', {ascending: false});
+    const {data, error} = await supabase
+        .from('badges')
+        .select('*')
+        .order('points', {ascending: false});
     if (error) throw error;
     return data ?? [];
 }
@@ -17,7 +20,9 @@ export async function getBadgeStats(userId: string) {
         .eq('user_id', userId);
     if (ubErr) throw ubErr;
 
-    const unlockedSet = new Set((userBadges ?? []).filter((b) => b.is_unlocked).map((b) => b.badge_id));
+    const unlockedSet = new Set(
+        (userBadges ?? []).filter((b) => b.is_unlocked).map((b) => b.badge_id)
+    );
 
     const byRarity: Record<string, { total: number; unlocked: number }> = {
         common: {total: 0, unlocked: 0},

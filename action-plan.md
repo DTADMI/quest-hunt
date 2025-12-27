@@ -1,6 +1,6 @@
 # QuestHunt Action Plan
 
-*Last Updated: December 21, 2025*
+_Last Updated: December 26, 2025_
 
 ## 🟢 Completed
 
@@ -21,7 +21,9 @@
   `/api/waypoints/[wpId]/visit`)
 - [x] Badges endpoints implemented (`/api/badges`, `/api/badges/stats`, `/api/badges/evaluate`)
 - [x] Shared Zod schemas and service modules under `apps/web/lib/server/*` for forward-compatibility
-- [x] Supabase migrations for progress, visits, and badges with RLS
+- [x] Supabase migrations for progress, visits, badges, profiles, friends, and activities with RLS
+- [x] DB-backed activity feed implementation (`/api/activities`)
+- [x] Feature flagging system with Admin control
 
 ### Map Integration
 
@@ -38,16 +40,13 @@
 - [x] Implemented toast notifications
 - [x] Added form validation with Zod
 
-## 🟡 In Progress
-
 ### Quest Management
 
 - [x] Set up quest API endpoints (Next.js Route Handlers under `apps/web/app/api/quests`)
-- [x] Implement quest creation form
+- [x] Implement quest creation flow
   - [x] Add form fields for quest details (title, description, difficulty, duration)
   - [x] Implement rich text editor for quest descriptions (TipTap) — sanitize on render
-  - [ ] Add image upload for quest cover (deferred)
-  - [x] Implement waypoint management with map integration (basic persistence on creation)
+  - [x] Implement waypoint management with map integration
   - [x] Add waypoint edit/delete and reorder within the form UI
   - [x] Add form validation (Zod + RHF) and server-side validation
 - [x] Create quest listing page (refined UI and filters)
@@ -71,80 +70,66 @@
   - [x] `GET /api/users/me` — current profile
   - [x] `PUT /api/users/me` — update current profile
   - [x] `GET /api/users/[id]` — public profile
+  - [x] `GET /api/users/me/stats` — user quest statistics
+  - [x] `GET /api/users/me/badges` — user unlocked badges
 - [x] Profile pages
-  - [x] `/profile` — edit own profile (username, display_name, bio, location, avatar_url)
+  - [x] `/profile` — enriched profile with stats, badges, and activity feed
   - [x] `/users/[id]` — public profile view
-- [x] Tests
-  - [x] Unit tests for `GET/PUT /api/users/me` (Vitest)
-- [ ] Enhancements (planned)
-  - [ ] User stats (quests completed, created, etc.)
-  - [ ] Activity feed (DB-backed)
-  - [ ] Badges and achievements on profile
-  - [ ] Avatar upload via Supabase Storage
-  - [ ] Notification preferences
-
-## 🔴 Planned
 
 ### Social Features
 
-- [x] Friend system (API MVP)
-  - [x] `GET /api/friends` — list friendships/requests
-  - [x] `POST /api/friends` — send friend request
-  - [x] `PUT /api/friends/[id]?action=accept|decline` — respond to request
-  - [x] `DELETE /api/friends/[id]` — remove friendship
-  - [ ] UI integration (list, accept/decline in app)
-  - [ ] Supabase migrations + RLS (friends table)
-- [ ] Activity feed
-  - [x] Mocked endpoint `/api/activities` (dev only)
-  - [ ] DB-backed activities table and queries
-  - [ ] Feed UI on profile/home
+- [x] Friend system
+  - [x] API: list, send, respond, remove
+  - [x] UI: `/friends` page for management
+  - [x] DB: Supabase migrations + RLS (friends table)
+- [x] Activity feed
+  - [x] DB-backed activities table and queries
+  - [x] Feed UI on profile
+
+### Gamification
+
+- [x] Leaderboards
+  - [x] API: top users by quests completed
+  - [x] UI: `/leaderboard` page
+
+## 🟡 In Progress
+
+### Quest Management
+
+- [ ] Add image upload for quest cover (S3/Supabase Storage)
+
+### Social Features
+
 - [ ] Messaging system
   - [ ] Schema (threads/messages)
   - [ ] Endpoints
   - [ ] Basic UI
-- [ ] Social sharing
-  - [ ] Share quest links (Open Graph cards)
+
+### Gamification
+
+- [ ] Achievements
+  - [x] Badges UI component
+  - [ ] Additional badge definitions and evaluation hooks
+
+## 🔴 Planned
 
 ### Advanced Map Features
 
 - [ ] Add route planning
 - [ ] Implement offline maps
 - [ ] Add custom map styles
-- [ ] Integrate with more map providers
-
-### Gamification
-
-- [x] Leaderboards (API MVP)
-  - [x] `GET /api/leaderboard` — top users by quests completed
-  - [ ] UI leaderboard component
-- [ ] Achievements
-  - [x] Badges endpoints exist (`/api/badges`, `/api/badges/stats`, `/api/badges/evaluate`)
-  - [ ] Map badges to achievement UI + profile display
-  - [ ] Additional badge definitions and evaluation hooks
-- [ ] Challenges and events
-  - [ ] Define schema and endpoints
-
-### Performance & Optimization
-
-- [ ] Implement image optimization
-- [ ] Add code splitting
-- [ ] Set up performance monitoring
-- [ ] Implement caching strategies
 
 ### Testing
 
 - [x] Add unit tests (Vitest) — Zod schemas
 - [x] Add unit tests (Vitest) — API routes: profiles, friends, leaderboard
-- [ ] Implement integration tests
-- [ ] Set up E2E testing (Playwright smoke planned next)
-- [ ] Add accessibility testing
+- [ ] Set up E2E testing (Playwright)
 
 ### Documentation
 
-- [x] Write API documentation (README updated with endpoints)
+- [x] Write API documentation (README updated)
 - [ ] Create user guides
 - [ ] Add developer documentation
-- [ ] Create deployment guides
 
 ## 📅 Upcoming Milestones
 

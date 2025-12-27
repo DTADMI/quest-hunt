@@ -8,12 +8,14 @@ vi.mock('@/lib/server/auth', () => ({
 
 const mockOrder = vi.fn(() => ({
     then: () => {
-    }
+    },
 }));
 const mockOr = vi.fn(() => ({order: mockOrder}));
 const mockSelect = vi.fn(() => ({eq: vi.fn().mockReturnThis(), or: mockOr, single: vi.fn()}));
 const mockInsert = vi.fn(() => ({select: () => ({single: vi.fn()})}));
-const mockUpdate = vi.fn(() => ({eq: () => ({or: () => ({select: () => ({single: vi.fn()})})})}));
+const mockUpdate = vi.fn(() => ({
+    eq: () => ({or: () => ({select: () => ({single: vi.fn()})})}),
+}));
 const mockDelete = vi.fn(() => ({eq: () => ({or: () => ({})})}));
 
 const mockFrom = vi.fn((table: string) => {
@@ -28,8 +30,10 @@ const mockFrom = vi.fn((table: string) => {
 vi.mock('@/lib/supabase/server', () => ({
     createClient: () => ({
         from: mockFrom,
-        auth: {getSession: vi.fn().mockResolvedValue({data: {session: {user: {id: 'user-1'}}}})}
-    })
+        auth: {
+            getSession: vi.fn().mockResolvedValue({data: {session: {user: {id: 'user-1'}}}}),
+        },
+    }),
 }));
 
 describe('API /api/friends', () => {
@@ -39,7 +43,9 @@ describe('API /api/friends', () => {
 
     it('lists friends (empty ok)', async () => {
         // simulate empty response
-        mockSelect.mockReturnValueOnce({or: () => ({order: () => ({data: [], error: null})})} as any);
+        mockSelect.mockReturnValueOnce({
+            or: () => ({order: () => ({data: [], error: null})}),
+        } as any);
         const res = await getFriends(new Request('http://localhost/api/friends'));
         const json = await (res as Response).json();
         expect((res as Response).status).toBe(200);
@@ -53,16 +59,18 @@ describe('API /api/friends', () => {
                 limit: () => ({
                     maybeSingle: () => ({
                         data: null,
-                        error: null
-                    })
-                })
-            })
+                        error: null,
+                    }),
+                }),
+            }),
         } as any);
         // insert success
-        mockInsert.mockReturnValueOnce({select: () => ({single: () => ({data: {id: 'f1'}, error: null})})} as any);
+        mockInsert.mockReturnValueOnce({
+            select: () => ({single: () => ({data: {id: 'f1'}, error: null})}),
+        } as any);
         const req = new Request('http://localhost/api/friends', {
             method: 'POST',
-            body: JSON.stringify({friend_id: 'user-2'})
+            body: JSON.stringify({friend_id: 'user-2'}),
         });
         const res = await postFriend(req as any);
         expect((res as Response).status).toBe(201);
@@ -78,12 +86,13 @@ describe('API /api/friends/[id]', () => {
                         single: () => ({
                             data: {
                                 id: 'f1',
-                                status: 'accepted'
-                            }, error: null
-                        })
-                    })
-                })
-            })
+                                status: 'accepted',
+                            },
+                            error: null,
+                        }),
+                    }),
+                }),
+            }),
         } as any);
         const req = new Request('http://localhost/api/friends/f1?action=accept', {method: 'PUT'});
         const res = await putFriend(req as any, {params: {id: 'f1'}});

@@ -43,9 +43,7 @@ export function QuestList({quests, showActions = true}: QuestListProps) {
         return (
             <div className="text-center py-12">
                 <h3 className="text-lg font-medium">No quests found</h3>
-                <p className="text-muted-foreground mt-2">
-                    Get started by creating a new quest
-                </p>
+                <p className="text-muted-foreground mt-2">Get started by creating a new quest</p>
                 {showActions && (
                     <Button className="mt-4" asChild>
                         <Link href="/quests/new">Create Quest</Link>
@@ -62,9 +60,7 @@ export function QuestList({quests, showActions = true}: QuestListProps) {
                     <CardHeader className="pb-3">
                         <div className="flex justify-between items-start">
                             <CardTitle className="text-lg">{quest.title}</CardTitle>
-                            <Badge className={difficultyColors[quest.difficulty]}>
-                                {quest.difficulty}
-                            </Badge>
+                            <Badge className={difficultyColors[quest.difficulty]}>{quest.difficulty}</Badge>
                         </div>
                     </CardHeader>
                     <CardContent className="flex-1">
@@ -77,7 +73,8 @@ export function QuestList({quests, showActions = true}: QuestListProps) {
                                 <div className="flex items-center text-muted-foreground">
                                     <MapPin className="h-4 w-4 mr-2"/>
                                     <span>
-                    {quest.start_location.coordinates[1].toFixed(4)}, {quest.start_location.coordinates[0].toFixed(4)}
+                    {quest.start_location.coordinates[1].toFixed(4)},{' '}
+                                        {quest.start_location.coordinates[0].toFixed(4)}
                   </span>
                                 </div>
                             )}

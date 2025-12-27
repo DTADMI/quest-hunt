@@ -42,11 +42,15 @@ const generateMockQuests = (count: number): Quest[] => {
         duration: Math.floor(Math.random() * 240) + 30,
         rating: Number((Math.random() * 3 + 2).toFixed(1)),
         reviewCount: Math.floor(Math.random() * 100),
-        location: ['Downtown', 'Mountains', 'Forest', 'Beach', 'City Center'][Math.floor(Math.random() * 5)],
+        location: ['Downtown', 'Mountains', 'Forest', 'Beach', 'City Center'][
+            Math.floor(Math.random() * 5)
+            ],
         imageUrl: `https://picsum.photos/seed/quest-${i + 1}/600/400`,
         status: statuses[Math.floor(Math.random() * statuses.length)] as Status,
-        tags: Array.from({length: Math.floor(Math.random() * 3) + 1},
-            () => tags[Math.floor(Math.random() * tags.length)]).filter((v, i, a) => a.indexOf(v) === i)
+        tags: Array.from(
+            {length: Math.floor(Math.random() * 3) + 1},
+            () => tags[Math.floor(Math.random() * tags.length)]
+        ).filter((v, i, a) => a.indexOf(v) === i),
     }));
 };
 
@@ -86,7 +90,7 @@ export default function QuestsPage() {
                 if (sortBy) params.set('sort', sortBy === 'newest' ? 'newest' : 'oldest');
                 const res = await fetch(`/api/quests?${params.toString()}`, {
                     signal: controller.signal,
-                    headers: {'Accept': 'application/json'},
+                    headers: {Accept: 'application/json'},
                     cache: 'no-store',
                 });
                 if (!res.ok) throw new Error('Failed to load quests');
@@ -206,10 +210,7 @@ export default function QuestsPage() {
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>{filteredQuests.length} quests found</span>
                         <span className="text-muted-foreground/50">•</span>
-                        <button
-                            onClick={handleResetFilters}
-                            className="text-primary hover:underline"
-                        >
+                        <button onClick={handleResetFilters} className="text-primary hover:underline">
                             Clear all filters
                         </button>
                     </div>
@@ -238,10 +239,20 @@ export default function QuestsPage() {
                         Page {page} • Showing {filteredQuests.length} of {total}
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" disabled={page <= 1}
-                                onClick={() => setPage(p => Math.max(1, p - 1))}>Previous</Button>
-                        <Button variant="outline" disabled={page * limit >= total}
-                                onClick={() => setPage(p => p + 1)}>Next</Button>
+                        <Button
+                            variant="outline"
+                            disabled={page <= 1}
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            disabled={page * limit >= total}
+                            onClick={() => setPage((p) => p + 1)}
+                        >
+                            Next
+                        </Button>
                         <select
                             className="ml-2 flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
                             value={limit}
@@ -250,7 +261,11 @@ export default function QuestsPage() {
                                 setLimit(parseInt(e.target.value, 10));
                             }}
                         >
-                            {[6, 12, 24, 36].map(n => (<option key={n} value={n}>{n} / page</option>))}
+                            {[6, 12, 24, 36].map((n) => (
+                                <option key={n} value={n}>
+                                    {n} / page
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

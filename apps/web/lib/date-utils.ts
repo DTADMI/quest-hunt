@@ -52,7 +52,7 @@ export function groupActivitiesByDate(activities: any[]): { date: string; activi
 
     const groups = new Map<string, any[]>();
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
         const activityDate = new Date(activity.timestamp);
         activityDate.setHours(0, 0, 0, 0);
 

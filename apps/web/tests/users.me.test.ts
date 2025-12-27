@@ -16,8 +16,10 @@ const mockFrom = vi.fn(() => ({
 vi.mock('@/lib/supabase/server', () => ({
     createClient: () => ({
         from: mockFrom,
-        auth: {getSession: vi.fn().mockResolvedValue({data: {session: {user: {id: 'user-1'}}}})}
-    })
+        auth: {
+            getSession: vi.fn().mockResolvedValue({data: {session: {user: {id: 'user-1'}}}}),
+        },
+    }),
 }));
 
 describe('API /api/users/me', () => {
@@ -26,7 +28,10 @@ describe('API /api/users/me', () => {
     });
 
     it('returns current user profile', async () => {
-        mockSelectSingle.mockResolvedValueOnce({data: {id: 'user-1', username: 'alice'}, error: null});
+        mockSelectSingle.mockResolvedValueOnce({
+            data: {id: 'user-1', username: 'alice'},
+            error: null,
+        });
         const res = await getMe();
         const json = await (res as Response).json();
         expect((res as Response).status).toBe(200);
@@ -34,7 +39,10 @@ describe('API /api/users/me', () => {
     });
 
     it('updates current user profile with valid fields', async () => {
-        mockSelectSingle.mockResolvedValueOnce({data: {id: 'user-1', username: 'alice'}, error: null});
+        mockSelectSingle.mockResolvedValueOnce({
+            data: {id: 'user-1', username: 'alice'},
+            error: null,
+        });
         const req = new Request('http://localhost/api/users/me', {
             method: 'PUT',
             body: JSON.stringify({display_name: 'Alice'}),

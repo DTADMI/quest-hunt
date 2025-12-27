@@ -28,7 +28,10 @@ export async function PUT(request: Request) {
         const body = await request.json().catch(() => ({}));
         const parsed = profileUpdateSchema.safeParse(body);
         if (!parsed.success) {
-            return NextResponse.json({error: 'Invalid request data', details: parsed.error.issues}, {status: 400});
+            return NextResponse.json(
+                {error: 'Invalid request data', details: parsed.error.issues},
+                {status: 400}
+            );
         }
         const supabase = createClient();
         const {data, error} = await supabase

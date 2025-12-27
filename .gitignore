@@ -45,6 +45,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+.junie/
 
 # Local development
 .cache/
@@ -108,3 +109,4 @@ yarn-error.log*
 # Typescript
 *.tsbuildinfo
 next-env.d.ts
+**/.output**.txt

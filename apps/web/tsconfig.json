@@ -41,7 +41,10 @@
     }
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/.output**.txt",
+    "**/**.md",
+    "**/**.mdx"
   ],
   "include": [
     "next-env.d.ts",

@@ -140,11 +140,15 @@ export function MapContainer({
           <div class="w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
             <MapPin className="w-4 h-4 text-white" />
           </div>
-          ${marker.title ? `
+          ${
+                marker.title
+                    ? `
             <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-white rounded shadow-md text-xs whitespace-nowrap">
               ${marker.title}
             </div>
-          ` : ''}
+          `
+                    : ''
+            }
         </div>
       `;
 
